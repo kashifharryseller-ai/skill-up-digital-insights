@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, X, ChevronDown } from "lucide-react";
+import { GraduationCap, Menu, X, Brain, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { name: "Home", href: "/" },
+  { name: "AI Research", href: "/ai-research", highlight: true },
   { name: "Programs", href: "/programs" },
   { name: "Scholarships", href: "/scholarships" },
   { name: "About", href: "/about" },
@@ -65,12 +66,17 @@ export function Navbar() {
                 to={link.href}
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                  location.pathname === link.href
+                  link.highlight && location.pathname !== link.href
+                    ? "text-primary bg-primary/5 hover:bg-primary/10"
+                    : location.pathname === link.href
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                {link.name}
+                <span className="flex items-center gap-1.5">
+                  {link.highlight && <Sparkles className="h-3 w-3" />}
+                  {link.name}
+                </span>
                 {location.pathname === link.href && (
                   <motion.div
                     layoutId="navbar-indicator"
