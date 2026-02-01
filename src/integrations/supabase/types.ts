@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          is_active: boolean
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_active?: boolean
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_active?: boolean
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
       scholarships: {
         Row: {
           amount: number
@@ -67,7 +88,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      platform_stats: {
+        Row: {
+          countries_covered: number | null
+          total_funding: number | null
+          total_scholarships: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
