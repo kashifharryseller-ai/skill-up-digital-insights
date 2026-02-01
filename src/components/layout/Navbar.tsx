@@ -34,12 +34,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { NotificationBell } from "./NotificationBell";
 
+import { HelpCircle } from "lucide-react";
+
 const researchDropdownItems = [
   { name: "Scholarships", href: "/ai-research?tab=scholarships", icon: Search },
   { name: "Faculty", href: "/ai-research?tab=faculty", icon: Users },
   { name: "Accreditation", href: "/ai-research?tab=accreditation", icon: ShieldCheck },
   { name: "Reviewer", href: "/ai-research?tab=reviewer", icon: FileCheck },
   { name: "Saved", href: "/ai-research?tab=saved", icon: Bookmark },
+  { name: "FAQs", href: "/faq", icon: HelpCircle },
 ];
 
 const navLinks = [
