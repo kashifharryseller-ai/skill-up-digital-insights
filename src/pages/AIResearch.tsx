@@ -10,6 +10,8 @@ import { FacultySearch } from "@/components/ai-research/FacultySearch";
 import { HecVerification } from "@/components/ai-research/HecVerification";
 import { DocumentReviewer } from "@/components/ai-research/DocumentReviewer";
 import { SavedItems } from "@/components/ai-research/SavedItems";
+import { UpgradePrompt } from "@/components/upgrade/UpgradePrompt";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Sparkles,
   GraduationCap,
@@ -18,19 +20,21 @@ import {
   FileText,
   Bookmark,
   Brain,
+  Lock,
 } from "lucide-react";
 
 type TabValue = 'scholarships' | 'faculty' | 'accreditation' | 'reviewer' | 'saved';
 
 const tabs = [
-  { value: 'scholarships' as TabValue, label: 'Scholarships', icon: GraduationCap },
-  { value: 'faculty' as TabValue, label: 'Faculty', icon: User },
-  { value: 'accreditation' as TabValue, label: 'Accreditation', icon: Shield },
-  { value: 'reviewer' as TabValue, label: 'Reviewer', icon: FileText },
-  { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark },
+  { value: 'scholarships' as TabValue, label: 'Scholarships', icon: GraduationCap, premium: false },
+  { value: 'faculty' as TabValue, label: 'Faculty', icon: User, premium: true },
+  { value: 'accreditation' as TabValue, label: 'Accreditation', icon: Shield, premium: true },
+  { value: 'reviewer' as TabValue, label: 'Reviewer', icon: FileText, premium: true },
+  { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark, premium: false },
 ];
 
 const validTabs: TabValue[] = ['scholarships', 'faculty', 'accreditation', 'reviewer', 'saved'];
+const premiumTabs: TabValue[] = ['faculty', 'accreditation', 'reviewer'];
 
 export default function AIResearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,6 +42,10 @@ export default function AIResearch() {
   const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : 'scholarships';
   
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+  const { user, isAdmin } = useAuth();
+
+  // For now, only admins have premium access (you can add subscription check later)
+  const isPremium = isAdmin;
 
   // Sync URL with tab changes
   useEffect(() => {
@@ -51,6 +59,19 @@ export default function AIResearch() {
     const newTab = value as TabValue;
     setActiveTab(newTab);
     setSearchParams({ tab: newTab });
+  };
+
+  const isPremiumTab = (tab: TabValue) => premiumTabs.includes(tab);
+
+  const renderTabContent = (tab: TabValue, Component: React.ComponentType, featureName: string) => {
+    if (isPremiumTab(tab) && !isPremium) {
+      return (
+        <div className="py-16">
+          <UpgradePrompt feature={featureName} />
+        </div>
+      );
+    }
+    return <Component />;
   };
 
   return (
@@ -107,10 +128,13 @@ export default function AIResearch() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-xl px-4 py-2.5 gap-2"
+                  className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-xl px-4 py-2.5 gap-2 relative"
                 >
                   <tab.icon className="h-4 w-4" />
                   <span className="hidden sm:inline">{tab.label}</span>
+                  {tab.premium && !isPremium && (
+                    <Lock className="h-3 w-3 text-muted-foreground absolute -top-1 -right-1" />
+                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -128,15 +152,15 @@ export default function AIResearch() {
             </TabsContent>
 
             <TabsContent value="faculty" className="mt-0">
-              <FacultySearch />
+              {renderTabContent('faculty', FacultySearch, 'Faculty Search & Matching')}
             </TabsContent>
 
             <TabsContent value="accreditation" className="mt-0">
-              <HecVerification />
+              {renderTabContent('accreditation', HecVerification, 'HEC Verification Tools')}
             </TabsContent>
 
             <TabsContent value="reviewer" className="mt-0">
-              <DocumentReviewer />
+              {renderTabContent('reviewer', DocumentReviewer, 'AI Document Review')}
             </TabsContent>
 
             <TabsContent value="saved" className="mt-0">
