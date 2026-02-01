@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -29,8 +30,28 @@ const tabs = [
   { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark },
 ];
 
+const validTabs: TabValue[] = ['scholarships', 'faculty', 'accreditation', 'reviewer', 'saved'];
+
 export default function AIResearch() {
-  const [activeTab, setActiveTab] = useState<TabValue>('scholarships');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") as TabValue | null;
+  const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : 'scholarships';
+  
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+
+  // Sync URL with tab changes
+  useEffect(() => {
+    const urlTab = searchParams.get("tab") as TabValue | null;
+    if (urlTab && validTabs.includes(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (value: string) => {
+    const newTab = value as TabValue;
+    setActiveTab(newTab);
+    setSearchParams({ tab: newTab });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,7 +99,7 @@ export default function AIResearch() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="space-y-8">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
           {/* Tab Navigation */}
           <div className="flex justify-center">
             <TabsList className="h-auto p-1.5 bg-muted/50 rounded-2xl flex-wrap justify-center gap-1">

@@ -3,12 +3,38 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, X, Sparkles, Moon, Sun } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  GraduationCap,
+  Menu,
+  X,
+  Sparkles,
+  Moon,
+  Sun,
+  ChevronDown,
+  Search,
+  Users,
+  ShieldCheck,
+  FileCheck,
+  Bookmark,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const researchDropdownItems = [
+  { name: "Scholarships", href: "/ai-research?tab=scholarships", icon: Search },
+  { name: "Faculty", href: "/ai-research?tab=faculty", icon: Users },
+  { name: "Accreditation", href: "/ai-research?tab=accreditation", icon: ShieldCheck },
+  { name: "Reviewer", href: "/ai-research?tab=reviewer", icon: FileCheck },
+  { name: "Saved", href: "/ai-research?tab=saved", icon: Bookmark },
+];
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "AI Research", href: "/ai-research", highlight: true },
   { name: "Programs", href: "/programs" },
   { name: "Scholarships", href: "/scholarships" },
   { name: "About", href: "/about" },
@@ -71,23 +97,78 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
+            {/* Home Link */}
+            <Link
+              to="/"
+              className={cn(
+                "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
+                location.pathname === "/"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              Home
+              {location.pathname === "/" && (
+                <motion.div
+                  layoutId="navbar-indicator"
+                  className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-primary rounded-full"
+                />
+              )}
+            </Link>
+
+            {/* AI Research Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center gap-1.5",
+                    location.pathname === "/ai-research"
+                      ? "text-primary bg-primary/5"
+                      : "text-primary bg-primary/5 hover:bg-primary/10"
+                  )}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  AI Research
+                  <ChevronDown className="h-3 w-3" />
+                  {location.pathname === "/ai-research" && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-primary rounded-full"
+                    />
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="start" 
+                className="w-48 bg-background border border-border shadow-lg z-50"
+              >
+                {researchDropdownItems.map((item) => (
+                  <DropdownMenuItem key={item.name} asChild>
+                    <Link
+                      to={item.href}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <item.icon className="h-4 w-4 text-muted-foreground" />
+                      {item.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Other Nav Links */}
+            {navLinks.slice(1).map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                  link.highlight && location.pathname !== link.href
-                    ? "text-primary bg-primary/5 hover:bg-primary/10"
-                    : location.pathname === link.href
+                  location.pathname === link.href
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <span className="flex items-center gap-1.5">
-                  {link.highlight && <Sparkles className="h-3 w-3" />}
-                  {link.name}
-                </span>
+                {link.name}
                 {location.pathname === link.href && (
                   <motion.div
                     layoutId="navbar-indicator"
@@ -181,21 +262,41 @@ export function Navbar() {
             className="lg:hidden bg-background/95 backdrop-blur-xl border-b border-border"
           >
             <div className="container mx-auto px-4 py-6 space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "block px-4 py-3 rounded-lg text-base font-medium transition-colors",
-                    location.pathname === link.href
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              {/* AI Research Section in Mobile */}
+              <div className="space-y-2">
+                <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  AI Research Tools
+                </p>
+                {researchDropdownItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors text-muted-foreground hover:bg-muted"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="border-t border-border pt-4 space-y-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "block px-4 py-3 rounded-lg text-base font-medium transition-colors",
+                      location.pathname === link.href
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
               <div className="pt-4 space-y-3 border-t border-border">
                 <Button variant="outline" className="w-full">
                   Sign In
