@@ -42,9 +42,7 @@ const team = [
 ];
 
 const milestones = [
-  { year: "2024", title: "Founded", description: "ScholarFind launched" },
-  { year: "2025", title: "1K Users", description: "First thousand students joined" },
-  { year: "2026", title: "Growing", description: "Expanding scholarship database" },
+  { year: "2026", title: "Founded", description: "ScholarFind launched" },
 ];
 
 const structuredData = {
@@ -53,7 +51,7 @@ const structuredData = {
   name: "ScholarFind",
   description: "Scholarship search platform connecting students with educational funding opportunities",
   url: "https://scholarfind.com",
-  foundingDate: "2024",
+  foundingDate: "2026",
   founders: [
     { "@type": "Person", name: "Malik Kashif", jobTitle: "Co-Founder & Software Engineer" },
     { "@type": "Person", name: "Inam Ul Haq", jobTitle: "Co-Founder & Software Engineer" },
