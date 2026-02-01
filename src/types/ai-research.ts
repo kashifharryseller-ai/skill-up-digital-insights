@@ -8,6 +8,7 @@ export interface AIScholarship {
   deadline: string;
   url: string;
   intake_cycle?: string;
+  source_type?: 'gov' | 'edu' | 'org';
 }
 
 export interface AIProfessor {
@@ -31,6 +32,7 @@ export interface AIUniversityData {
   requirements_url?: string;
   min_cgpa?: string;
   notes?: string;
+  official_source?: string;
   scholarships: AIScholarship[];
   professors?: AIProfessor[];
 }
@@ -56,6 +58,7 @@ export interface DocumentReview {
 export interface AISearchResponse {
   universities: AIUniversityData[];
   summary?: string;
+  verification_note?: string;
 }
 
 export interface BookmarkedItem {

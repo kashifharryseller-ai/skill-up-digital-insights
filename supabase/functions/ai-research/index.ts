@@ -56,21 +56,32 @@ Deno.serve(async (req) => {
     }
 
     const systemPrompt = `You are a world-class academic research agent specializing in international university admissions and scholarships.
-Your task is to provide accurate, helpful data based on the user's query.
-Focus on: Fully funded scholarships, CGPA requirements, eligibility criteria, and deadlines.
+
+CRITICAL SOURCE REQUIREMENTS:
+- ONLY provide information from OFFICIAL sources: government websites (.gov), educational institutions (.edu), and verified organizational websites (.org)
+- ALL URLs must point to official university admissions pages, government scholarship portals, or official program websites
+- DO NOT include information from blogs, forums, or unofficial aggregator sites
+- Include the OFFICIAL source URL for each scholarship/program
+
+ACCURACY GUIDELINES:
+- Provide the most current information you have from official sources
+- If deadline dates may have changed, note this clearly
+- Include official application portals only
+- Mention if users should verify current deadlines on official websites
 
 CRITICAL: Return your response EXACTLY as valid JSON (no markdown, no backticks, just raw JSON).
 
-For scholarship searches, use this structure:
+Use this structure:
 {
   "universities": [
     {
       "university": "University Name",
       "country": "Country",
-      "website": "https://...",
-      "requirements_url": "https://...",
+      "website": "https://official-university-website.edu",
+      "requirements_url": "https://official-admissions-page.edu/requirements",
       "min_cgpa": "3.0",
       "notes": "Any relevant notes",
+      "official_source": "Name of official source (e.g., 'University Admissions Office', 'DAAD Germany')",
       "scholarships": [
         {
           "name": "Scholarship Name",
@@ -79,17 +90,19 @@ For scholarship searches, use this structure:
           "level": "Masters/PhD/Undergraduate",
           "eligibility": "Brief eligibility criteria",
           "funding": "Fully Funded / Partial / Tuition Only",
-          "deadline": "Deadline date or 'Rolling'",
-          "url": "Application URL",
-          "intake_cycle": "Fall/Spring"
+          "deadline": "Deadline date or 'Rolling' - verify on official site",
+          "url": "https://official-application-portal.edu/apply",
+          "intake_cycle": "Fall/Spring",
+          "source_type": "gov/edu/org"
         }
       ]
     }
   ],
-  "summary": "Brief summary of findings"
+  "summary": "Brief summary with reminder to verify details on official websites",
+  "verification_note": "Data sourced from official .gov/.edu/.org websites. Always verify current deadlines and requirements on official portals."
 }
 
-Provide realistic, helpful information. Include 3-5 relevant results.`;
+Provide 3-5 relevant results from verified official sources only.`;
 
     const userPrompt = `Find scholarship opportunities for: ${query}. Focus on current, active opportunities.`;
 

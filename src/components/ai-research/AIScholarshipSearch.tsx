@@ -16,6 +16,7 @@ import {
   Loader2,
   GraduationCap,
   AlertCircle,
+  ShieldCheck,
 } from "lucide-react";
 
 export function AIScholarshipSearch() {
@@ -192,6 +193,21 @@ export function AIScholarshipSearch() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
+          {/* Verification Notice */}
+          {results.verification_note && (
+            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-3">
+              <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-primary">
+                  Official Sources Only
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {results.verification_note}
+                </p>
+              </div>
+            </div>
+          )}
+
           {results.summary && (
             <div className="p-4 rounded-xl bg-muted/50 border border-border">
               <p className="text-sm text-muted-foreground">{results.summary}</p>
