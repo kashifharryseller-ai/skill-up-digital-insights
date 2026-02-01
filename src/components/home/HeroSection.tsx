@@ -135,8 +135,8 @@ export function HeroSection() {
               <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
             </div>
             <div>
-              <p className="font-bold text-foreground">Scholarship Awarded!</p>
-              <p className="text-sm text-muted-foreground">Full tuition • MIT</p>
+              <p className="font-bold text-foreground">Data Verified</p>
+              <p className="text-sm text-muted-foreground">From .edu sources</p>
             </div>
           </div>
         </div>
@@ -158,8 +158,8 @@ export function HeroSection() {
               <TrendingUp className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <p className="font-bold text-foreground">+500 New</p>
-              <p className="text-sm text-muted-foreground">Scholarships this month</p>
+              <p className="font-bold text-foreground">Live Updates</p>
+              <p className="text-sm text-muted-foreground">Real-time deadlines</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ export function HeroSection() {
           >
             <Sparkles className="h-4 w-4 text-primary animate-pulse" />
             <span className="text-sm font-semibold text-primary">
-              Your Gateway to Global Education
+              AI-Powered Scholarship Search
             </span>
           </motion.div>
 
@@ -188,9 +188,9 @@ export function HeroSection() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Find Your Perfect{" "}
+            Find{" "}
             <span className="text-gradient relative">
-              Scholarship
+              Scholarships
               <motion.span
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
@@ -198,10 +198,7 @@ export function HeroSection() {
                 className="absolute bottom-2 left-0 h-3 bg-primary/20 -z-10 rounded"
               />
             </span>
-            <br />
-            <span className="text-muted-foreground text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal">
-              in Minutes, Not Months
-            </span>
+            {" "}Faster
           </motion.h1>
 
           {/* Subheading */}
@@ -211,8 +208,8 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            AI-powered scholarship matching. Real-time opportunities from universities
-            worldwide. Start your journey to debt-free education today.
+            Search real-time data from official .gov, .edu, and .org sources.
+            No outdated listings. No guesswork.
           </motion.p>
 
           {/* Search Bar */}

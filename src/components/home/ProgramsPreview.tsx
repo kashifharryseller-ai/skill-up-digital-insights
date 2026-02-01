@@ -64,18 +64,18 @@ export function ProgramsPreview() {
         >
           <div>
             <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
-              Our Programs
+              Programs
             </span>
             <h2
               className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Explore Top <span className="text-gradient">Programs</span>
+              Top <span className="text-gradient">Fields</span>
             </h2>
           </div>
           <Button variant="outline" className="gap-2 group self-start md:self-auto" asChild>
             <Link to="/programs">
-              View All Programs
+              View All
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

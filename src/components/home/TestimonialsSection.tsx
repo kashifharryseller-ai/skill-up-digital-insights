@@ -5,11 +5,11 @@ const testimonials = [
   {
     id: 1,
     name: "Sarah Johnson",
-    role: "Computer Science Graduate",
+    role: "CS Graduate",
     university: "MIT",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
     content:
-      "ScholarFind helped me discover a full scholarship that I never knew existed. The platform's smart search made it incredibly easy to find opportunities tailored to my profile.",
+      "Found a full scholarship I didn't know existed. The search filters made it easy to match my profile.",
     rating: 5,
   },
   {
@@ -19,7 +19,7 @@ const testimonials = [
     university: "Stanford",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
     content:
-      "The comprehensive database and filters saved me countless hours. I secured funding for my graduate studies within weeks of using ScholarFind.",
+      "Secured funding within weeks. The verified data saved me hours of manual research.",
     rating: 5,
   },
   {
@@ -29,7 +29,7 @@ const testimonials = [
     university: "Johns Hopkins",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
     content:
-      "As an international student, finding scholarships was overwhelming. ScholarFind's global reach connected me with opportunities I couldn't find anywhere else.",
+      "As an international student, I found opportunities here that weren't listed anywhere else.",
     rating: 5,
   },
 ];
@@ -50,16 +50,16 @@ export function TestimonialsSection() {
           className="max-w-3xl mx-auto text-center mb-16"
         >
           <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
-            Testimonials
+            Results
           </span>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            What Our <span className="text-gradient">Students</span> Say
+            Student <span className="text-gradient">Outcomes</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Hear from students who transformed their educational journey with ScholarFind.
+            Real results from real users.
           </p>
         </motion.div>
 

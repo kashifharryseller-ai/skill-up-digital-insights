@@ -4,44 +4,44 @@ import { Search, Award, Globe, BookOpen, Users, Lightbulb } from "lucide-react";
 const features = [
   {
     icon: Search,
-    title: "Smart Search",
+    title: "Smart Filters",
     description:
-      "Advanced filtering by field, level, country, and amount to find your perfect scholarship match.",
+      "Filter by field, degree level, country, and funding amount.",
     color: "from-primary to-primary/60",
   },
   {
     icon: Award,
-    title: "Curated Listings",
+    title: "Verified Sources",
     description:
-      "Access verified scholarships from top foundations, universities, and organizations worldwide.",
+      "Data from official .gov, .edu, and .org websites only.",
     color: "from-accent to-accent/60",
   },
   {
     icon: Globe,
-    title: "Global Reach",
+    title: "Global Coverage",
     description:
-      "Opportunities for students anywhere—from local grants to international fellowships.",
+      "Scholarships from 120+ countries and top institutions.",
     color: "from-info to-info/60",
   },
   {
     icon: BookOpen,
-    title: "Expert Programs",
+    title: "Faculty Search",
     description:
-      "Comprehensive academic programs designed by industry leaders and top educators.",
+      "Find professors and research supervisors at target universities.",
     color: "from-success to-success/60",
   },
   {
     icon: Users,
-    title: "Community Support",
+    title: "HEC Verification",
     description:
-      "Connect with peers, mentors, and alumni who share your educational journey.",
+      "Check if universities are recognized by Pakistan's HEC.",
     color: "from-warning to-warning/60",
   },
   {
     icon: Lightbulb,
-    title: "Career Guidance",
+    title: "Document Review",
     description:
-      "Personalized career counseling and job placement assistance for graduates.",
+      "AI-powered feedback on SOPs and research proposals.",
     color: "from-destructive to-destructive/60",
   },
 ];
@@ -84,18 +84,16 @@ export function FeaturesSection() {
           className="max-w-3xl mx-auto text-center mb-16"
         >
           <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
-            Why Choose Us
+            Features
           </span>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Everything You Need to{" "}
-            <span className="text-gradient">Succeed</span>
+            What You <span className="text-gradient">Get</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Powerful features designed to help you find the perfect educational 
-            opportunity and achieve your academic dreams.
+            Tools built for serious scholarship applicants.
           </p>
         </motion.div>
 

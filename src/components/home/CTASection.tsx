@@ -42,7 +42,7 @@ export function CTASection() {
                 >
                   <Sparkles className="h-4 w-4 text-white" />
                   <span className="text-sm font-medium text-white">
-                    Start Your Journey Today
+                    Free to Use
                   </span>
                 </motion.div>
 
@@ -50,14 +50,12 @@ export function CTASection() {
                   className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Ready to Transform
-                  <br />
-                  Your Future?
+                  Start Searching Now
                 </h2>
 
                 <p className="text-lg text-white/80 max-w-2xl mx-auto mb-10">
-                  Join thousands of students who have found their perfect scholarship 
-                  and educational opportunity through ScholarFind.
+                  Access verified scholarship data from official sources.
+                  No signup required.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

@@ -7,30 +7,26 @@ const stats = [
     icon: Users,
     value: 50000,
     suffix: "+",
-    label: "Students Enrolled",
-    description: "Active learners worldwide",
+    label: "Users",
   },
   {
     icon: GraduationCap,
     value: 200,
     suffix: "+",
-    label: "Academic Programs",
-    description: "Across all disciplines",
+    label: "Programs",
   },
   {
     icon: Award,
     value: 10,
     suffix: "M+",
     prefix: "$",
-    label: "Scholarships Awarded",
-    description: "To deserving students",
+    label: "Funding Listed",
   },
   {
     icon: Globe,
     value: 120,
     suffix: "+",
-    label: "Countries Reached",
-    description: "Global community",
+    label: "Countries",
   },
 ];
 
@@ -94,20 +90,19 @@ export function StatsSection() {
               transition={{ delay: index * 0.1 }}
               className="text-center"
             >
-              <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm mb-4">
-                <stat.icon className="h-8 w-8 text-white" />
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm mb-4">
+                <stat.icon className="h-7 w-7 text-white" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-white mb-2">
+              <div className="text-3xl md:text-4xl font-bold text-white mb-1">
                 <AnimatedNumber
                   value={stat.value}
                   prefix={stat.prefix}
                   suffix={stat.suffix}
                 />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-1">
+              <h3 className="text-base font-medium text-white/90">
                 {stat.label}
               </h3>
-              <p className="text-white/70 text-sm">{stat.description}</p>
             </motion.div>
           ))}
         </div>
