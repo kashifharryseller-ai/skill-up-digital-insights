@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   GraduationCap,
   Menu,
@@ -22,8 +24,13 @@ import {
   ShieldCheck,
   FileCheck,
   Bookmark,
+  LogOut,
+  Shield,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 const researchDropdownItems = [
   { name: "Scholarships", href: "/ai-research?tab=scholarships", icon: Search },
@@ -44,10 +51,13 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { user, profile, isAdmin, signOut, isLoading } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -65,6 +75,20 @@ export function Navbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const getInitials = () => {
+    if (profile?.display_name) {
+      return profile.display_name.slice(0, 2).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.slice(0, 2).toUpperCase();
+    }
+    return "U";
+  };
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -241,15 +265,66 @@ export function Navbar() {
                 </AnimatePresence>
               </Button>
             )}
-            <Button variant="ghost" size="sm" className="font-medium">
-              Sign In
-            </Button>
-            <Button
-              size="sm"
-              className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg shadow-primary/25 font-medium"
-            >
-              Get Started
-            </Button>
+
+            {!isLoading && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="gap-2 pl-2 pr-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium text-sm">
+                      {profile?.display_name || user.email?.split("@")[0]}
+                    </span>
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <User className="h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
+                        <Shield className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 cursor-pointer text-destructive"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="font-medium"
+                  onClick={() => setAuthModalOpen(true)}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg shadow-primary/25 font-medium"
+                  onClick={() => setAuthModalOpen(true)}
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -278,6 +353,9 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -344,12 +422,56 @@ export function Navbar() {
                 transition={{ delay: 0.5, duration: 0.3 }}
                 className="pt-4 space-y-3 border-t border-border"
               >
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-                <Button className="w-full bg-gradient-primary">
-                  Get Started
-                </Button>
+                {user ? (
+                  <>
+                    {isAdmin && (
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/admin");
+                        }}
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin Dashboard
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        handleSignOut();
+                        setIsOpen(false);
+                      }}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setAuthModalOpen(true);
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      className="w-full bg-gradient-primary"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setAuthModalOpen(true);
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                  </>
+                )}
               </motion.div>
             </div>
           </motion.div>
