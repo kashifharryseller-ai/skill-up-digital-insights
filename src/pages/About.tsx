@@ -42,15 +42,15 @@ const team = [
 ];
 
 const milestones = [
-  { year: "2026", title: "Founded", description: "ScholarFind launched" },
+  { year: "2026", title: "Founded", description: "Up Scholar launched by Skill Up Digital Solutions" },
 ];
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "ScholarFind",
-  description: "Scholarship search platform connecting students with educational funding opportunities",
-  url: "https://scholarfind.com",
+  name: "Skill Up Digital Solutions",
+  description: "Up Scholar - Scholarship search platform connecting students with educational funding opportunities",
+  url: "https://upscholar.com",
   foundingDate: "2026",
   founders: [
     { "@type": "Person", name: "Malik Kashif", jobTitle: "Co-Founder & Software Engineer" },
@@ -73,8 +73,8 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>About ScholarFind - Scholarship Search Platform</title>
-        <meta name="description" content="ScholarFind helps students find scholarships. Founded by Malik Kashif and Inam Ul Haq, software engineers from Lahore, Pakistan." />
+        <title>About Up Scholar - Skill Up Digital Solutions</title>
+        <meta name="description" content="Up Scholar by Skill Up Digital Solutions helps students find scholarships. Founded by Malik Kashif and Inam Ul Haq, software engineers from Lahore, Pakistan." />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Navbar />
@@ -99,10 +99,10 @@ export default function About() {
               className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              About <span className="text-gradient">ScholarFind</span>
+              About <span className="text-gradient">Up Scholar</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              A scholarship search platform built by students, for students.
+              A scholarship search platform by Skill Up Digital Solutions.
             </p>
           </motion.div>
         </div>
@@ -148,14 +148,14 @@ export default function About() {
                 className="text-3xl sm:text-4xl font-bold tracking-tight mb-6"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                Why We Built <span className="text-gradient">ScholarFind</span>
+                Why We Built <span className="text-gradient">Up Scholar</span>
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
                   We noticed students struggle to find scholarship information. Many miss deadlines or never learn about opportunities that match their profile.
                 </p>
                 <p>
-                  ScholarFind aggregates scholarships from universities, governments, and organizations into one searchable platform.
+                  Up Scholar aggregates scholarships from universities, governments, and organizations into one searchable platform.
                 </p>
                 <p>
                   Our AI-powered search helps you find relevant scholarships faster.

@@ -43,10 +43,10 @@ export function Footer() {
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             <h3 className="text-3xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Stay Updated with ScholarFind
+              Stay Updated with Up Scholar
             </h3>
             <p className="text-background/70 mb-8 max-w-2xl mx-auto">
-              Subscribe to our newsletter for the latest scholarship opportunities, 
+              Subscribe to our newsletter for the latest scholarship opportunities,
               educational resources, and exclusive insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -73,8 +73,8 @@ export function Footer() {
                 <GraduationCap className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <span className="text-2xl font-bold text-background">ScholarFind</span>
-                <p className="text-xs text-background/60 uppercase tracking-widest">Education Platform</p>
+                <span className="text-2xl font-bold text-background">Up Scholar</span>
+                <p className="text-xs text-background/60 uppercase tracking-widest">Skill Up Digital Solutions</p>
               </div>
             </Link>
             <p className="text-background/70 mb-6 max-w-sm">
@@ -153,7 +153,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-background/60 text-sm">
-              © 2026 ScholarFind. All rights reserved.
+              © 2026 Skill Up Digital Solutions. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => (
