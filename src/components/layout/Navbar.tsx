@@ -28,27 +28,38 @@ import {
   Shield,
   User,
   Crown,
+  HelpCircle,
+  Map,
+  FileText,
+  DollarSign,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { NotificationBell } from "./NotificationBell";
 
-import { HelpCircle } from "lucide-react";
+// AI Tools Section
+const aiToolsItems = [
+  { name: "AI Scholarship Search", href: "/ai-research?tab=scholarships", icon: Search, description: "Find opportunities with AI" },
+  { name: "Faculty Finder", href: "/ai-research?tab=faculty", icon: Users, description: "Connect with professors" },
+  { name: "HEC Verification", href: "/ai-research?tab=accreditation", icon: ShieldCheck, description: "Check university recognition" },
+  { name: "Document Reviewer", href: "/ai-research?tab=reviewer", icon: FileCheck, description: "AI feedback on your SOP" },
+  { name: "Saved Items", href: "/ai-research?tab=saved", icon: Bookmark, description: "Your bookmarked items" },
+];
 
-const researchDropdownItems = [
-  { name: "Scholarships", href: "/ai-research?tab=scholarships", icon: Search },
-  { name: "Faculty", href: "/ai-research?tab=faculty", icon: Users },
-  { name: "Accreditation", href: "/ai-research?tab=accreditation", icon: ShieldCheck },
-  { name: "Reviewer", href: "/ai-research?tab=reviewer", icon: FileCheck },
-  { name: "Saved", href: "/ai-research?tab=saved", icon: Bookmark },
-  { name: "FAQs", href: "/faq", icon: HelpCircle },
+// Strategy & Guide Section
+const strategyItems = [
+  { name: "Application Roadmap", href: "/strategy", icon: Map, description: "Step-by-step guide" },
+  { name: "Document Preparation", href: "/strategy#documents", icon: FileText, description: "SOP, CV, LOR templates" },
+  { name: "Fees & Funding", href: "/strategy#fees", icon: DollarSign, description: "Real-time cost breakdown" },
+  { name: "Requirements Checklist", href: "/strategy#requirements", icon: ClipboardList, description: "Complete checklist" },
+  { name: "FAQs", href: "/faq", icon: HelpCircle, description: "Common questions" },
 ];
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "Programs", href: "/programs" },
-  { name: "Scholarships", href: "/scholarships" },
+  { name: "Browse Database", href: "/scholarships" },
   { name: "Pricing", href: "/pricing", icon: Crown, highlight: true },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -147,26 +158,26 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* AI Research Dropdown */}
+            {/* Scholarships Dropdown */}
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
                     "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center gap-1.5 group",
-                    location.pathname === "/ai-research"
+                    location.pathname === "/ai-research" || location.pathname === "/strategy"
                       ? "text-primary bg-primary/5"
                       : "text-primary bg-primary/5 hover:bg-primary/10"
                   )}
                 >
                   <Sparkles className="h-3 w-3" />
-                  AI Research
+                  Scholarships
                   <motion.div
                     animate={{ rotate: dropdownOpen ? 180 : 0 }}
                     transition={{ duration: 0.2, ease: "easeInOut" }}
                   >
                     <ChevronDown className="h-3 w-3" />
                   </motion.div>
-                  {location.pathname === "/ai-research" && (
+                  {(location.pathname === "/ai-research" || location.pathname === "/strategy") && (
                     <motion.div
                       layoutId="navbar-indicator"
                       className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-primary rounded-full"
@@ -178,7 +189,7 @@ export function Navbar() {
                 {dropdownOpen && (
                   <DropdownMenuContent 
                     align="start" 
-                    className="w-52 bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl z-50 p-2 rounded-xl"
+                    className="w-72 bg-background border border-border shadow-2xl z-50 p-3 rounded-xl"
                     asChild
                     forceMount
                   >
@@ -188,25 +199,67 @@ export function Navbar() {
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
                     >
-                      {researchDropdownItems.map((item, index) => (
-                        <DropdownMenuItem key={item.name} asChild>
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05, duration: 0.2 }}
-                          >
-                            <Link
-                              to={item.href}
-                              className="flex items-center gap-3 cursor-pointer w-full px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors group"
+                      {/* AI Tools Section */}
+                      <div className="mb-3">
+                        <p className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                          AI-Powered Tools
+                        </p>
+                        {aiToolsItems.map((item, index) => (
+                          <DropdownMenuItem key={item.name} asChild>
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.03, duration: 0.2 }}
                             >
-                              <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                <item.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                              </div>
-                              <span className="font-medium">{item.name}</span>
-                            </Link>
-                          </motion.div>
-                        </DropdownMenuItem>
-                      ))}
+                              <Link
+                                to={item.href}
+                                onClick={() => setDropdownOpen(false)}
+                                className="flex items-center gap-3 cursor-pointer w-full px-2 py-2 rounded-lg hover:bg-primary/10 transition-colors group"
+                              >
+                                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+                                  <item.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="font-medium text-sm block">{item.name}</span>
+                                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+
+                      <DropdownMenuSeparator />
+
+                      {/* Strategy & Guide Section */}
+                      <div className="mt-3">
+                        <p className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                          Build Your Strategy
+                        </p>
+                        {strategyItems.map((item, index) => (
+                          <DropdownMenuItem key={item.name} asChild>
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: (aiToolsItems.length + index) * 0.03, duration: 0.2 }}
+                            >
+                              <Link
+                                to={item.href}
+                                onClick={() => setDropdownOpen(false)}
+                                className="flex items-center gap-3 cursor-pointer w-full px-2 py-2 rounded-lg hover:bg-primary/10 transition-colors group"
+                              >
+                                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+                                  <item.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="font-medium text-sm block">{item.name}</span>
+                                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
                     </motion.div>
                   </DropdownMenuContent>
                 )}
@@ -382,12 +435,12 @@ export function Navbar() {
             className="lg:hidden bg-background/95 backdrop-blur-xl border-b border-border"
           >
             <div className="container mx-auto px-4 py-6 space-y-4">
-              {/* AI Research Section in Mobile */}
+              {/* AI Tools Section in Mobile */}
               <div className="space-y-2">
                 <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  AI Research Tools
+                  AI-Powered Tools
                 </p>
-                {researchDropdownItems.map((item, index) => (
+                {aiToolsItems.map((item, index) => (
                   <motion.div
                     key={item.name}
                     initial={{ opacity: 0, x: -20 }}
@@ -402,7 +455,39 @@ export function Navbar() {
                       <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                         <item.icon className="h-4 w-4 group-hover:text-primary transition-colors" />
                       </div>
-                      {item.name}
+                      <div>
+                        <span className="block">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Strategy Section in Mobile */}
+              <div className="space-y-2 border-t border-border pt-4">
+                <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Build Your Strategy
+                </p>
+                {strategyItems.map((item, index) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (aiToolsItems.length + index) * 0.05, duration: 0.2 }}
+                  >
+                    <Link
+                      to={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors text-muted-foreground hover:bg-muted group"
+                    >
+                      <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <item.icon className="h-4 w-4 group-hover:text-primary transition-colors" />
+                      </div>
+                      <div>
+                        <span className="block">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
                     </Link>
                   </motion.div>
                 ))}
