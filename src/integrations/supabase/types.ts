@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      scholarships: {
+        Row: {
+          amount: number
+          application_url: string | null
+          country: string
+          created_at: string
+          deadline: string
+          description: string
+          education_level: string
+          eligibility: string
+          field_of_study: string
+          gpa_requirement: number | null
+          id: string
+          name: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          application_url?: string | null
+          country: string
+          created_at?: string
+          deadline: string
+          description: string
+          education_level: string
+          eligibility: string
+          field_of_study: string
+          gpa_requirement?: number | null
+          id?: string
+          name: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          application_url?: string | null
+          country?: string
+          created_at?: string
+          deadline?: string
+          description?: string
+          education_level?: string
+          eligibility?: string
+          field_of_study?: string
+          gpa_requirement?: number | null
+          id?: string
+          name?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
