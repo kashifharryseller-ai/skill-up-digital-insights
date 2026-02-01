@@ -29,26 +29,30 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email Us",
-    details: "hello@scholarfind.edu",
-    description: "We'll respond within 24 hours",
+    details: "harryseller9@gmail.com",
+    description: "We respond within 24 hours",
+    href: "mailto:harryseller9@gmail.com",
   },
   {
     icon: Phone,
-    title: "Call Us",
-    details: "+1 (555) 123-4567",
-    description: "Mon-Fri, 9am-6pm EST",
+    title: "WhatsApp",
+    details: "+92 343 6148715",
+    description: "Mon-Fri, 9am-6pm PKT",
+    href: "https://api.whatsapp.com/send/?phone=923436148715",
   },
   {
     icon: MapPin,
-    title: "Visit Us",
-    details: "123 Education Lane",
-    description: "Learning City, ED 12345",
+    title: "Location",
+    details: "Lahore, Pakistan",
+    description: "Punjab, Pakistan",
+    href: "https://maps.google.com/?q=Lahore,Pakistan",
   },
   {
     icon: Clock,
     title: "Office Hours",
     details: "Monday - Friday",
-    description: "9:00 AM - 6:00 PM EST",
+    description: "9:00 AM - 6:00 PM PKT",
+    href: null,
   },
 ];
 
@@ -136,22 +140,42 @@ export default function Contact() {
       <section className="py-12 -mt-8 relative z-20">
         <div className="container mx-auto px-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {contactInfo.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-card border border-border/50 shadow-lg hover:shadow-xl hover:border-primary/30 transition-all"
-              >
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary mb-4">
-                  <item.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="font-semibold mb-1">{item.title}</h3>
-                <p className="text-foreground font-medium">{item.details}</p>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </motion.div>
-            ))}
+            {contactInfo.map((item, index) => {
+              const content = (
+                <>
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary mb-4">
+                    <item.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold mb-1">{item.title}</h3>
+                  <p className="text-foreground font-medium">{item.details}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </>
+              );
+              
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-6 rounded-2xl bg-card border border-border/50 shadow-lg hover:shadow-xl hover:border-primary/30 transition-all"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <div className="p-6 rounded-2xl bg-card border border-border/50 shadow-lg">
+                      {content}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -320,13 +344,14 @@ export default function Contact() {
         <div className="container mx-auto px-4">
           <div className="rounded-2xl overflow-hidden h-96 bg-card border border-border/50">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.2219901290355!2d-74.00369368400567!3d40.71312937933185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a23e28c1191%3A0x49f75d3281df052a!2s150%20Park%20Row%2C%20New%20York%2C%20NY%2010007%2C%20USA!5e0!3m2!1sen!2s!4v1622141456789!5m2!1sen!2s"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d435519.22741013!2d74.00472275!3d31.4832073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190483e58107d9%3A0xc23abe6ccc7e2462!2sLahore%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1622141456789!5m2!1sen!2s"
               width="100%"
               height="100%"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              title="ScholarFind Location - Lahore, Pakistan"
             />
           </div>
         </div>
