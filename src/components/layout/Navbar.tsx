@@ -32,6 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { NotificationBell } from "./NotificationBell";
 
 const researchDropdownItems = [
   { name: "Scholarships", href: "/ai-research?tab=scholarships", icon: Search },
@@ -270,6 +271,9 @@ export function Navbar() {
                 </AnimatePresence>
               </Button>
             )}
+
+            {/* Notification Bell - only for logged in users */}
+            {!isLoading && user && <NotificationBell />}
 
             {!isLoading && user ? (
               <DropdownMenu>

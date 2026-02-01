@@ -175,6 +175,16 @@ export default function Admin() {
         variant: "destructive",
       });
     } else {
+      // Send notification to user if upgrading to premium/enterprise
+      if (tier !== "free") {
+        await supabase.from("notifications").insert({
+          user_id: userId,
+          title: `Subscription Upgraded to ${tier.charAt(0).toUpperCase() + tier.slice(1)}!`,
+          message: `Your ${tier} subscription has been approved. You now have access to all ${tier} features. Enjoy!`,
+          type: "subscription",
+        });
+      }
+
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -196,6 +206,8 @@ export default function Admin() {
   };
 
   const handleApproveSubscription = async (userId: string) => {
+    const userProfile = users.find((u) => u.user_id === userId);
+    
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -211,6 +223,14 @@ export default function Admin() {
         variant: "destructive",
       });
     } else {
+      // Send notification to user
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Subscription Approved! 🎉",
+        message: `Your ${userProfile?.subscription_tier || "premium"} subscription has been approved. You now have full access to all premium features.`,
+        type: "subscription",
+      });
+
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -245,6 +265,14 @@ export default function Admin() {
         variant: "destructive",
       });
     } else {
+      // Send notification to user
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Subscription Access Revoked",
+        message: "Your premium subscription access has been revoked. Please contact support if you have any questions.",
+        type: "warning",
+      });
+
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
