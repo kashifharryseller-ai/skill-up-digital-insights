@@ -41,6 +41,9 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          subscription_approved_at: string | null
+          subscription_approved_by: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
           updated_at: string
           user_id: string
         }
@@ -49,6 +52,9 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          subscription_approved_at?: string | null
+          subscription_approved_by?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
           user_id: string
         }
@@ -57,6 +63,9 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          subscription_approved_at?: string | null
+          subscription_approved_by?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
           user_id?: string
         }
@@ -147,6 +156,7 @@ export type Database = {
           total_scholarships: number
         }[]
       }
+      has_premium_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -157,6 +167,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      subscription_tier: "free" | "premium" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -285,6 +296,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      subscription_tier: ["free", "premium", "enterprise"],
     },
   },
 } as const

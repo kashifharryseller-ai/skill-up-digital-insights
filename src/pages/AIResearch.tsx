@@ -42,10 +42,7 @@ export default function AIResearch() {
   const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : 'scholarships';
   
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
-  const { user, isAdmin } = useAuth();
-
-  // For now, only admins have premium access (you can add subscription check later)
-  const isPremium = isAdmin;
+  const { user, isPremium } = useAuth();
 
   // Sync URL with tab changes
   useEffect(() => {
