@@ -84,16 +84,16 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-background/70">
                 <MapPin className="h-5 w-5 text-primary" />
-                <span>123 Education Lane, Learning City, ED 12345</span>
+                <span>Lahore, Pakistan</span>
               </div>
-              <div className="flex items-center gap-3 text-background/70">
+              <a href="https://wa.me/923436148715" className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
                 <Phone className="h-5 w-5 text-primary" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-3 text-background/70">
+                <span>+92 343 6148715</span>
+              </a>
+              <a href="mailto:harryseller9@gmail.com" className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
                 <Mail className="h-5 w-5 text-primary" />
-                <span>hello@scholarfind.edu</span>
-              </div>
+                <span>harryseller9@gmail.com</span>
+              </a>
             </div>
           </div>
 

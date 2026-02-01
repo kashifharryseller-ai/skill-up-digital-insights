@@ -2,67 +2,83 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
-import { Target, Eye, Heart, Linkedin, Twitter, Mail } from "lucide-react";
+import { Target, Eye, Heart, Linkedin, Mail, Phone } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const values = [
   {
     icon: Target,
     title: "Our Mission",
     description:
-      "To democratize access to quality education by connecting students with scholarships and programs that match their potential and aspirations.",
+      "Connect students with scholarships and programs matching their goals.",
   },
   {
     icon: Eye,
     title: "Our Vision",
     description:
-      "A world where financial barriers never prevent talented individuals from achieving their educational dreams and reaching their full potential.",
+      "Remove financial barriers so every student can achieve their educational dreams.",
   },
   {
     icon: Heart,
     title: "Our Values",
     description:
-      "Integrity, accessibility, innovation, and student success drive everything we do. We believe every student deserves the opportunity to excel.",
+      "Integrity, accessibility, and student success drive everything we do.",
   },
 ];
 
 const team = [
   {
-    name: "Dr. Sarah Mitchell",
-    role: "Founder & CEO",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
-    bio: "Former Harvard professor with 20+ years in education technology.",
+    name: "Malik Kashif",
+    role: "Co-Founder & Software Engineer",
+    location: "Lahore, Pakistan",
+    bio: "Full-stack developer focused on building accessible education technology.",
   },
   {
-    name: "Michael Chen",
-    role: "Chief Technology Officer",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
-    bio: "Ex-Google engineer passionate about EdTech innovation.",
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "Head of Partnerships",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop",
-    bio: "Built scholarship networks across 50+ countries.",
-  },
-  {
-    name: "James Williams",
-    role: "Director of Student Success",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop",
-    bio: "Dedicated to helping students navigate their educational journey.",
+    name: "Inam Ul Haq",
+    role: "Co-Founder & Software Engineer",
+    location: "Lahore, Pakistan",
+    bio: "Software engineer passionate about helping students find opportunities.",
   },
 ];
 
 const milestones = [
-  { year: "2018", title: "Founded", description: "ScholarFind was born from a simple idea" },
-  { year: "2019", title: "10K Users", description: "Reached our first major milestone" },
-  { year: "2021", title: "$5M Scholarships", description: "Helped award $5M in scholarships" },
-  { year: "2023", title: "Global Expansion", description: "Expanded to 120+ countries" },
-  { year: "2026", title: "50K+ Students", description: "Serving 50,000+ active students" },
+  { year: "2024", title: "Founded", description: "ScholarFind launched" },
+  { year: "2025", title: "1K Users", description: "First thousand students joined" },
+  { year: "2026", title: "Growing", description: "Expanding scholarship database" },
 ];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ScholarFind",
+  description: "Scholarship search platform connecting students with educational funding opportunities",
+  url: "https://scholarfind.com",
+  foundingDate: "2024",
+  founders: [
+    { "@type": "Person", name: "Malik Kashif", jobTitle: "Co-Founder & Software Engineer" },
+    { "@type": "Person", name: "Inam Ul Haq", jobTitle: "Co-Founder & Software Engineer" },
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+923436148715",
+    email: "harryseller9@gmail.com",
+    contactType: "customer service",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Lahore",
+    addressCountry: "Pakistan",
+  },
+};
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About ScholarFind - Scholarship Search Platform</title>
+        <meta name="description" content="ScholarFind helps students find scholarships. Founded by Malik Kashif and Inam Ul Haq, software engineers from Lahore, Pakistan." />
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+      </Helmet>
       <Navbar />
 
       {/* Hero */}
@@ -85,12 +101,10 @@ export default function About() {
               className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Empowering Dreams Through{" "}
-              <span className="text-gradient">Education</span>
+              About <span className="text-gradient">ScholarFind</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              We're on a mission to make quality education accessible to everyone,
-              everywhere. Join us in transforming lives through opportunity.
+              A scholarship search platform built by students, for students.
             </p>
           </motion.div>
         </div>
@@ -136,25 +150,33 @@ export default function About() {
                 className="text-3xl sm:text-4xl font-bold tracking-tight mb-6"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                From a Simple Idea to a{" "}
-                <span className="text-gradient">Global Movement</span>
+                Why We Built <span className="text-gradient">ScholarFind</span>
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  ScholarFind was founded in 2018 by Dr. Sarah Mitchell, who witnessed
-                  firsthand how talented students were missing out on life-changing
-                  opportunities simply because they didn't know they existed.
+                  We noticed students struggle to find scholarship information. Many miss deadlines or never learn about opportunities that match their profile.
                 </p>
                 <p>
-                  What started as a simple database of scholarships has grown into a
-                  comprehensive education platform serving over 50,000 students across
-                  120+ countries.
+                  ScholarFind aggregates scholarships from universities, governments, and organizations into one searchable platform.
                 </p>
                 <p>
-                  Today, we partner with leading universities, foundations, and
-                  organizations worldwide to ensure that every student has access to
-                  the resources they need to succeed.
+                  Our AI-powered search helps you find relevant scholarships faster.
                 </p>
+              </div>
+              
+              {/* Contact Info */}
+              <div className="mt-8 p-4 rounded-xl bg-card border border-border/50">
+                <h3 className="font-semibold mb-3">Contact Us</h3>
+                <div className="space-y-2 text-sm">
+                  <a href="https://wa.me/923436148715" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                    <Phone className="h-4 w-4" />
+                    <span>+92 343 6148715 (WhatsApp)</span>
+                  </a>
+                  <a href="mailto:harryseller9@gmail.com" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                    <Mail className="h-4 w-4" />
+                    <span>harryseller9@gmail.com</span>
+                  </a>
+                </div>
               </div>
             </motion.div>
 
@@ -209,15 +231,14 @@ export default function About() {
               className="text-3xl sm:text-4xl font-bold tracking-tight mb-4"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Meet the <span className="text-gradient">Experts</span>
+              Meet the <span className="text-gradient">Founders</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Our passionate team of educators, technologists, and dreamers working
-              together to transform education access.
+              Software engineers from Lahore, Pakistan building tools for students.
             </p>
           </motion.div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-2 max-w-2xl mx-auto">
             {team.map((member, index) => (
               <motion.div
                 key={index}
@@ -228,32 +249,27 @@ export default function About() {
                 className="group"
               >
                 <div className="text-center p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl transition-all">
-                  <div className="relative mb-6 mx-auto w-32 h-32">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full rounded-full object-cover ring-4 ring-primary/10 group-hover:ring-primary/30 transition-all"
-                    />
+                  <div className="relative mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center">
+                    <span className="text-3xl font-bold text-primary-foreground">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </span>
                   </div>
                   <h3 className="font-semibold text-lg mb-1">{member.name}</h3>
-                  <p className="text-primary text-sm mb-3">{member.role}</p>
+                  <p className="text-primary text-sm mb-1">{member.role}</p>
+                  <p className="text-muted-foreground text-xs mb-3">{member.location}</p>
                   <p className="text-muted-foreground text-sm mb-4">{member.bio}</p>
                   <div className="flex justify-center gap-3">
                     <a
-                      href="#"
+                      href="https://wa.me/923436148715"
                       className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                      aria-label={`Contact ${member.name} on WhatsApp`}
                     >
-                      <Linkedin className="h-4 w-4" />
+                      <Phone className="h-4 w-4" />
                     </a>
                     <a
-                      href="#"
+                      href="mailto:harryseller9@gmail.com"
                       className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                    >
-                      <Twitter className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="#"
-                      className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                      aria-label={`Email ${member.name}`}
                     >
                       <Mail className="h-4 w-4" />
                     </a>
