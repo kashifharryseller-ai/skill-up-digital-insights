@@ -169,7 +169,7 @@ export default function About() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/investors">For Investors</Link>
+                <Link to="/contact">Get in Touch</Link>
               </Button>
             </div>
           </motion.div>
@@ -411,17 +411,21 @@ export default function About() {
               <div className="mt-8 p-6 rounded-xl bg-card border border-border/50">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-primary" />
-                  Interested in Partnering?
+                  Build With Us
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  We're always looking for universities, organizations, and investors to join our mission.
+                  We're building the future of education access. Whether you're a university, 
+                  organization, or investor — there's a place for you in our mission.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <Button size="sm" className="bg-gradient-primary hover:opacity-90" asChild>
-                    <Link to="/investors">For Investors</Link>
+                    <Link to="/partners">Partner Program</Link>
                   </Button>
                   <Button size="sm" variant="outline" asChild>
-                    <Link to="/contact">Contact Us</Link>
+                    <Link to="/investors">Investor Deck</Link>
+                  </Button>
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/contact">Contact Team</Link>
                   </Button>
                 </div>
               </div>
