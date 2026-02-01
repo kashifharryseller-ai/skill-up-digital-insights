@@ -43,6 +43,7 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const location = useLocation();
@@ -117,11 +118,11 @@ export function Navbar() {
             </Link>
 
             {/* AI Research Dropdown */}
-            <DropdownMenu>
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center gap-1.5",
+                    "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center gap-1.5 group",
                     location.pathname === "/ai-research"
                       ? "text-primary bg-primary/5"
                       : "text-primary bg-primary/5 hover:bg-primary/10"
@@ -129,7 +130,12 @@ export function Navbar() {
                 >
                   <Sparkles className="h-3 w-3" />
                   AI Research
-                  <ChevronDown className="h-3 w-3" />
+                  <motion.div
+                    animate={{ rotate: dropdownOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </motion.div>
                   {location.pathname === "/ai-research" && (
                     <motion.div
                       layoutId="navbar-indicator"
@@ -138,22 +144,43 @@ export function Navbar() {
                   )}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="start" 
-                className="w-48 bg-background border border-border shadow-lg z-50"
-              >
-                {researchDropdownItems.map((item) => (
-                  <DropdownMenuItem key={item.name} asChild>
-                    <Link
-                      to={item.href}
-                      className="flex items-center gap-2 cursor-pointer"
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <DropdownMenuContent 
+                    align="start" 
+                    className="w-52 bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl z-50 p-2 rounded-xl"
+                    asChild
+                    forceMount
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                     >
-                      <item.icon className="h-4 w-4 text-muted-foreground" />
-                      {item.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
+                      {researchDropdownItems.map((item, index) => (
+                        <DropdownMenuItem key={item.name} asChild>
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05, duration: 0.2 }}
+                          >
+                            <Link
+                              to={item.href}
+                              className="flex items-center gap-3 cursor-pointer w-full px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors group"
+                            >
+                              <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <item.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                              </div>
+                              <span className="font-medium">{item.name}</span>
+                            </Link>
+                          </motion.div>
+                        </DropdownMenuItem>
+                      ))}
+                    </motion.div>
+                  </DropdownMenuContent>
+                )}
+              </AnimatePresence>
             </DropdownMenu>
 
             {/* Other Nav Links */}
@@ -267,44 +294,63 @@ export function Navbar() {
                 <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   AI Research Tools
                 </p>
-                {researchDropdownItems.map((item) => (
-                  <Link
+                {researchDropdownItems.map((item, index) => (
+                  <motion.div
                     key={item.name}
-                    to={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors text-muted-foreground hover:bg-muted"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.2 }}
                   >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
+                    <Link
+                      to={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors text-muted-foreground hover:bg-muted group"
+                    >
+                      <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <item.icon className="h-4 w-4 group-hover:text-primary transition-colors" />
+                      </div>
+                      {item.name}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
 
               <div className="border-t border-border pt-4 space-y-2">
-                {navLinks.map((link) => (
-                  <Link
+                {navLinks.map((link, index) => (
+                  <motion.div
                     key={link.name}
-                    to={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "block px-4 py-3 rounded-lg text-base font-medium transition-colors",
-                      location.pathname === link.href
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-muted"
-                    )}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.25 + index * 0.05, duration: 0.2 }}
                   >
-                    {link.name}
-                  </Link>
+                    <Link
+                      to={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "block px-4 py-3 rounded-lg text-base font-medium transition-colors",
+                        location.pathname === link.href
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
-              <div className="pt-4 space-y-3 border-t border-border">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+                className="pt-4 space-y-3 border-t border-border"
+              >
                 <Button variant="outline" className="w-full">
                   Sign In
                 </Button>
                 <Button className="w-full bg-gradient-primary">
                   Get Started
                 </Button>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
