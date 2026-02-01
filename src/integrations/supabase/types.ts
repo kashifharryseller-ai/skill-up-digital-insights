@@ -88,17 +88,17 @@ export type Database = {
       }
     }
     Views: {
-      platform_stats: {
-        Row: {
-          countries_covered: number | null
-          total_funding: number | null
-          total_scholarships: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_platform_stats: {
+        Args: never
+        Returns: {
+          countries_covered: number
+          total_funding: number
+          total_scholarships: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
