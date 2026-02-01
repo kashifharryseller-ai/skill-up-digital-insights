@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   GraduationCap,
   Menu,
@@ -271,6 +271,9 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2 pl-2 pr-3">
                     <Avatar className="h-8 w-8">
+                      {profile?.avatar_url && (
+                        <AvatarImage src={profile.avatar_url} alt="Avatar" />
+                      )}
                       <AvatarFallback className="bg-primary/10 text-primary text-sm">
                         {getInitials()}
                       </AvatarFallback>
