@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
+import { ArrowRight, GraduationCap, Search, Award, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -9,19 +10,20 @@ const Index = () => {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+              <GraduationCap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold tracking-tight">Lumina</span>
+            <span className="text-xl font-bold tracking-tight">ScholarFind</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+            <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
             <a href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm">Sign In</Button>
-            <Button size="sm" className="gap-2">
-              Get Started <ArrowRight className="h-4 w-4" />
+            <Button size="sm" className="gap-2" asChild>
+              <Link to="/scholarships">
+                Find Scholarships <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -49,25 +51,27 @@ const Index = () => {
 
             {/* Headline */}
             <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Build faster with
+              Find your perfect
               <span className="block bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
-                intelligent automation
+                scholarship today
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
-              Lumina transforms how teams work. Automate repetitive tasks, streamline workflows, 
-              and focus on what truly matters—building exceptional products.
+              ScholarFind helps students discover scholarships tailored to their goals. 
+              Search by field of study, education level, and more to find funding for your education.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="h-12 px-8 text-base gap-2 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
-                Start Free Trial <ArrowRight className="h-4 w-4" />
+              <Button size="lg" className="h-12 px-8 text-base gap-2 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all" asChild>
+                <Link to="/scholarships">
+                  Browse Scholarships <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-base">
-                Watch Demo
+              <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
+                <a href="#features">Learn More</a>
               </Button>
             </div>
 
@@ -104,19 +108,19 @@ const Index = () => {
           <div className="grid gap-8 md:grid-cols-3">
             {[
               {
-                icon: Zap,
-                title: "Lightning Fast",
-                description: "Execute workflows in milliseconds. Our infrastructure is optimized for speed at every layer."
+                icon: Search,
+                title: "Smart Search",
+                description: "Filter scholarships by field of study, education level, country, and amount to find the perfect match."
               },
               {
-                icon: Shield,
-                title: "Enterprise Security",
-                description: "SOC 2 compliant with end-to-end encryption. Your data is protected by industry-leading security."
+                icon: Award,
+                title: "Curated Listings",
+                description: "Access verified scholarships from top foundations, universities, and organizations worldwide."
               },
               {
-                icon: Sparkles,
-                title: "AI-Powered",
-                description: "Smart automation that learns from your patterns and suggests optimizations automatically."
+                icon: Globe,
+                title: "Global Reach",
+                description: "Find opportunities for students anywhere—from local grants to international fellowships."
               }
             ].map((feature, i) => (
               <div
@@ -141,13 +145,15 @@ const Index = () => {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)]" />
             <div className="relative">
               <h2 className="mb-4 text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-                Ready to transform your workflow?
+                Ready to fund your education?
               </h2>
               <p className="mx-auto mb-8 max-w-xl text-primary-foreground/80">
-                Join thousands of teams already using Lumina to build better products, faster.
+                Start browsing scholarships today and take the first step toward achieving your academic dreams.
               </p>
-              <Button size="lg" variant="secondary" className="h-12 px-8 text-base gap-2">
-                Get Started Free <ArrowRight className="h-4 w-4" />
+              <Button size="lg" variant="secondary" className="h-12 px-8 text-base gap-2" asChild>
+                <Link to="/scholarships">
+                  Find Scholarships <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
@@ -160,12 +166,12 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-primary-foreground" />
+                <GraduationCap className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold tracking-tight">Lumina</span>
+              <span className="text-xl font-bold tracking-tight">ScholarFind</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2026 Lumina. All rights reserved.
+              © 2026 ScholarFind. All rights reserved.
             </p>
           </div>
         </div>
