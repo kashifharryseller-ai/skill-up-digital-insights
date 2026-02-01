@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+import { validateEmail } from "@/lib/email-validation";
+import { Loader2, Mail, Lock, User, AlertCircle } from "lucide-react";
 
 interface AuthModalProps {
   open: boolean;
@@ -23,14 +24,47 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     displayName: "",
   });
 
+  const handleEmailChange = (email: string) => {
+    setFormData({ ...formData, email });
+    // Clear error when user types
+    if (emailError) {
+      setEmailError(null);
+    }
+  };
+
+  const handleEmailBlur = () => {
+    if (mode === "signup" && formData.email) {
+      const validation = validateEmail(formData.email);
+      if (!validation.valid) {
+        setEmailError(validation.error || "Invalid email");
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email for signup (block temp emails)
+    if (mode === "signup") {
+      const validation = validateEmail(formData.email);
+      if (!validation.valid) {
+        setEmailError(validation.error || "Invalid email");
+        toast({
+          title: "Invalid Email",
+          description: validation.error,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     setIsLoading(true);
 
     try {
@@ -120,13 +154,23 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 type="email"
                 placeholder="you@example.com"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="pl-10"
+                onChange={(e) => handleEmailChange(e.target.value)}
+                onBlur={handleEmailBlur}
+                className={`pl-10 ${emailError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                 required
               />
             </div>
+            {emailError && (
+              <div className="flex items-center gap-2 text-sm text-destructive">
+                <AlertCircle className="h-3 w-3" />
+                <span>{emailError}</span>
+              </div>
+            )}
+            {mode === "signup" && !emailError && (
+              <p className="text-xs text-muted-foreground">
+                Use a permanent email address (no temporary/disposable emails)
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

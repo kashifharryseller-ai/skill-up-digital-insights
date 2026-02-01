@@ -166,9 +166,9 @@ export function HeroSection() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Find{" "}
+            Unlock{" "}
             <span className="text-gradient relative">
-              Scholarships
+              Scholarship
               <motion.span
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
@@ -176,7 +176,7 @@ export function HeroSection() {
                 className="absolute bottom-2 left-0 h-3 bg-primary/20 -z-10 rounded"
               />
             </span>
-            {" "}Faster
+            {" "}Opportunities
           </motion.h1>
 
           {/* Subheading */}
@@ -186,8 +186,8 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Search real-time data from official .gov, .edu, and .org sources.
-            No outdated listings. No guesswork.
+            Complete guide & strategy with real-time requirements.
+            AI-powered generator with fully fresh data from official sources.
           </motion.p>
 
           {/* Search Bar */}
