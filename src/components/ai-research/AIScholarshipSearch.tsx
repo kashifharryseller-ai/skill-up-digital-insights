@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { useAuth } from "@/hooks/useAuth";
+import { useFreeSearch } from "@/hooks/useFreeSearch";
 import { aiResearchApi } from "@/lib/api/ai-research";
 import type { AISearchResponse, AIUniversityData } from "@/types/ai-research";
 import { AIUniversityCard } from "./AIUniversityCard";
+import { AuthModal } from "@/components/auth/AuthModal";
 import {
   Search,
   Sparkles,
@@ -17,25 +20,56 @@ import {
   GraduationCap,
   AlertCircle,
   ShieldCheck,
+  Gift,
+  Lock,
 } from "lucide-react";
 
 export function AIScholarshipSearch() {
   const { toast } = useToast();
   const { history, addToHistory, removeFromHistory } = useSearchHistory();
+  const { user, isPremium } = useAuth();
+  const { hasUsedFreeSearch, canUseFreeTrial, recordFreeSearchUsage, isLoading: freeSearchLoading } = useFreeSearch("scholarships");
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AISearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const handleSearch = async (searchQuery?: string) => {
     const activeQuery = searchQuery || query;
     if (!activeQuery.trim()) return;
+
+    // Check if user needs to login
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please sign in to use AI search. You get one free search!",
+        variant: "destructive",
+      });
+      setAuthModalOpen(true);
+      return;
+    }
+
+    // Check if user can search (premium or has free trial available)
+    if (!isPremium && hasUsedFreeSearch) {
+      toast({
+        title: "Free Trial Used",
+        description: "Upgrade to premium for unlimited AI searches.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     setResults(null);
 
     try {
+      // Record free search usage if not premium
+      if (!isPremium) {
+        await recordFreeSearchUsage();
+      }
+
       const response = await aiResearchApi.searchScholarships(activeQuery);
 
       if (response.success && response.data) {
@@ -72,6 +106,51 @@ export function AIScholarshipSearch() {
 
   return (
     <div className="space-y-8">
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+
+      {/* Free Trial Banner */}
+      {user && !isPremium && !freeSearchLoading && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border flex items-center gap-3 ${
+            canUseFreeTrial
+              ? "bg-primary/10 border-primary/20"
+              : "bg-muted border-border"
+          }`}
+        >
+          {canUseFreeTrial ? (
+            <>
+              <Gift className="h-5 w-5 text-primary shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-primary">
+                  🎁 Free Trial Available!
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  You have 1 free AI search. Try it now to unlock scholarship opportunities!
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <Lock className="h-5 w-5 text-muted-foreground shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">Free Trial Used</p>
+                <p className="text-xs text-muted-foreground">
+                  Upgrade to premium for unlimited AI searches and full access to all tools.
+                </p>
+              </div>
+              <Button size="sm" className="bg-gradient-primary hover:opacity-90" asChild>
+                <a href="https://wa.me/923436148715?text=Hello!%20I%20want%20to%20upgrade%20to%20premium%20for%20unlimited%20AI%20searches.">
+                  Upgrade Now
+                </a>
+              </Button>
+            </>
+          )}
+        </motion.div>
+      )}
+
       {/* Search Form */}
       <div className="relative">
         <form
@@ -91,12 +170,12 @@ export function AIScholarshipSearch() {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search e.g. 'Fully funded CS masters in Germany'..."
                   className="pl-12 pr-4 h-14 text-lg rounded-2xl border-2 focus:border-primary"
-                  disabled={isLoading}
+                  disabled={isLoading || (!isPremium && hasUsedFreeSearch)}
                 />
               </div>
               <Button
                 type="submit"
-                disabled={isLoading || !query.trim()}
+                disabled={isLoading || !query.trim() || (!isPremium && hasUsedFreeSearch)}
                 className="h-14 px-8 rounded-2xl bg-gradient-primary hover:opacity-90 gap-2"
               >
                 {isLoading ? (
