@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ScholarshipFilters } from "@/components/scholarship/ScholarshipFilters";
 import { ScholarshipList } from "@/components/scholarship/ScholarshipList";
@@ -19,7 +20,22 @@ const defaultFilters: Filters = {
 };
 
 export default function Scholarships() {
-  const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
+  
+  const [filters, setFilters] = useState<Filters>({
+    ...defaultFilters,
+    search: initialSearch,
+  });
+  
+  // Update filters when URL search param changes
+  useEffect(() => {
+    const urlSearch = searchParams.get("search") || "";
+    if (urlSearch !== filters.search) {
+      setFilters((prev) => ({ ...prev, search: urlSearch }));
+    }
+  }, [searchParams]);
+  
   const { data: scholarships, isLoading, error } = useScholarships(filters);
   const { data: options } = useScholarshipOptions();
 
