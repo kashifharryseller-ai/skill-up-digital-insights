@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle, Sparkles, Crown, Building2 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Check, X, MessageCircle, Sparkles, Crown, Building2 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "923436148715";
 
@@ -69,11 +70,41 @@ const plans = [
   },
 ];
 
+const comparisonFeatures = [
+  { name: "Scholarship Search", free: true, premium: true, enterprise: true },
+  { name: "Daily Search Limit", free: "10/day", premium: "Unlimited", enterprise: "Unlimited" },
+  { name: "Save Scholarships", free: "5 max", premium: "Unlimited", enterprise: "Unlimited" },
+  { name: "Email Notifications", free: true, premium: true, enterprise: true },
+  { name: "AI Document Review", free: false, premium: true, enterprise: true },
+  { name: "Faculty Search & Matching", free: false, premium: true, enterprise: true },
+  { name: "HEC Verification Tools", free: false, premium: true, enterprise: true },
+  { name: "Advanced Filters", free: false, premium: true, enterprise: true },
+  { name: "Analytics Dashboard", free: false, premium: true, enterprise: true },
+  { name: "Priority Support", free: false, premium: true, enterprise: true },
+  { name: "Multi-user Access", free: false, premium: false, enterprise: "Up to 10" },
+  { name: "Custom Branding", free: false, premium: false, enterprise: true },
+  { name: "API Access", free: false, premium: false, enterprise: true },
+  { name: "Dedicated Account Manager", free: false, premium: false, enterprise: true },
+  { name: "Custom Integrations", free: false, premium: false, enterprise: true },
+  { name: "SLA Guarantee", free: false, premium: false, enterprise: true },
+];
+
 const generateWhatsAppLink = (planName: string, price: string) => {
   const message = encodeURIComponent(
     `Hi! I'm interested in upgrading to the ${planName} plan (${price} PKR/month) on Up Scholar. Please provide more details about the subscription process.`
   );
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+};
+
+const renderCellValue = (value: boolean | string) => {
+  if (typeof value === "boolean") {
+    return value ? (
+      <Check className="h-5 w-5 text-primary mx-auto" />
+    ) : (
+      <X className="h-5 w-5 text-muted-foreground/40 mx-auto" />
+    );
+  }
+  return <span className="text-sm font-medium">{value}</span>;
 };
 
 export default function Pricing() {
@@ -193,6 +224,99 @@ export default function Pricing() {
               </motion.div>
             ))}
           </div>
+
+          {/* Comparison Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-24 max-w-5xl mx-auto"
+          >
+            <div className="text-center mb-12">
+              <h2
+                className="text-3xl md:text-4xl font-bold mb-4"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Compare All Features
+              </h2>
+              <p className="text-muted-foreground">
+                See exactly what you get with each plan
+              </p>
+            </div>
+
+            <Card className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="w-[300px] font-semibold">Feature</TableHead>
+                      <TableHead className="text-center font-semibold">
+                        <div className="flex flex-col items-center gap-1">
+                          <Sparkles className="h-4 w-4 text-muted-foreground" />
+                          Free
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-center font-semibold bg-primary/5">
+                        <div className="flex flex-col items-center gap-1">
+                          <Crown className="h-4 w-4 text-primary" />
+                          Premium
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-center font-semibold">
+                        <div className="flex flex-col items-center gap-1">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          Enterprise
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {comparisonFeatures.map((feature, index) => (
+                      <TableRow key={feature.name} className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}>
+                        <TableCell className="font-medium">{feature.name}</TableCell>
+                        <TableCell className="text-center">{renderCellValue(feature.free)}</TableCell>
+                        <TableCell className="text-center bg-primary/5">{renderCellValue(feature.premium)}</TableCell>
+                        <TableCell className="text-center">{renderCellValue(feature.enterprise)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+
+            {/* CTA below table */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+              <Button
+                size="lg"
+                className="bg-gradient-primary hover:opacity-90 gap-2"
+                asChild
+              >
+                <a
+                  href={generateWhatsAppLink("Premium", "2,999")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Upgrade to Premium
+                </a>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2"
+                asChild
+              >
+                <a
+                  href={generateWhatsAppLink("Enterprise", "14,999")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Contact for Enterprise
+                </a>
+              </Button>
+            </div>
+          </motion.div>
 
           {/* FAQ or Note */}
           <motion.div
