@@ -3,48 +3,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-interface AIProvider {
-  name: string;
-  call: (systemPrompt: string, userPrompt: string) => Promise<string>;
-}
-
-async function callGemini(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [
-        { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
-      ],
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 4096,
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Gemini API error:', errorText);
-    throw new Error('Gemini API request failed');
-  }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-}
-
-async function callDeepSeek(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
-  const response = await fetch(DEEPSEEK_API_URL, {
+async function callLovableAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
+  const response = await fetch(LOVABLE_API_URL, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'deepseek-r1-0528',
+      model: 'google/gemini-3-flash-preview',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -55,8 +24,8 @@ async function callDeepSeek(apiKey: string, systemPrompt: string, userPrompt: st
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('DeepSeek API error:', errorText);
-    throw new Error('DeepSeek API request failed');
+    console.error('Lovable AI error:', errorText);
+    throw new Error('AI request failed');
   }
 
   const data = await response.json();
@@ -69,7 +38,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { query, type = 'scholarships', provider = 'gemini' } = await req.json();
+    const { query, type = 'scholarships' } = await req.json();
 
     if (!query) {
       return new Response(
@@ -78,11 +47,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
-    const deepseekKey = Deno.env.get('DEEPSEEK_API_KEY');
-
-    if (!geminiKey && !deepseekKey) {
-      console.error('No AI API keys configured');
+    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'AI service not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -127,43 +93,12 @@ Provide realistic, helpful information. Include 3-5 relevant results.`;
 
     const userPrompt = `Find scholarship opportunities for: ${query}. Focus on current, active opportunities.`;
 
-    console.log('AI Research Query:', query, 'Type:', type, 'Provider:', provider);
+    console.log('AI Research Query:', query, 'Type:', type);
 
-    let content: string;
+    const content = await callLovableAI(apiKey, systemPrompt, userPrompt);
 
-    // Try DeepSeek first if requested and available, otherwise fall back to Gemini
-    if (provider === 'deepseek' && deepseekKey) {
-      try {
-        content = await callDeepSeek(deepseekKey, systemPrompt, userPrompt);
-      } catch (e) {
-        console.log('DeepSeek failed, falling back to Gemini');
-        if (geminiKey) {
-          content = await callGemini(geminiKey, systemPrompt, userPrompt);
-        } else {
-          throw e;
-        }
-      }
-    } else if (geminiKey) {
-      try {
-        content = await callGemini(geminiKey, systemPrompt, userPrompt);
-      } catch (e) {
-        console.log('Gemini failed, falling back to DeepSeek');
-        if (deepseekKey) {
-          content = await callDeepSeek(deepseekKey, systemPrompt, userPrompt);
-        } else {
-          throw e;
-        }
-      }
-    } else if (deepseekKey) {
-      content = await callDeepSeek(deepseekKey, systemPrompt, userPrompt);
-    } else {
-      throw new Error('No AI provider available');
-    }
-
-    // Parse the JSON response
     let parsed;
     try {
-      // Handle potential markdown wrapping
       const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/```\n?([\s\S]*?)\n?```/);
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
       parsed = JSON.parse(jsonStr);
