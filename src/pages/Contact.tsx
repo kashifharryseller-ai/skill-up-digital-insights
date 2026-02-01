@@ -410,7 +410,7 @@ export default function Contact() {
             >
               {/* Quick Links */}
               <div className="p-6 rounded-2xl bg-card border border-border/50">
-                <h3 className="font-semibold mb-4">Quick Links</h3>
+                <h3 className="font-semibold mb-4">Explore More</h3>
                 <div className="space-y-3">
                   <Link 
                     to="/about" 
@@ -418,13 +418,6 @@ export default function Contact() {
                   >
                     <ArrowRight className="h-4 w-4" />
                     About Our Team
-                  </Link>
-                  <Link 
-                    to="/investors" 
-                    className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                    Investor Relations
                   </Link>
                   <Link 
                     to="/pricing" 
@@ -443,17 +436,31 @@ export default function Contact() {
                 </div>
               </div>
 
+              {/* For Partners */}
+              <div className="p-6 rounded-2xl bg-muted/50 border border-border/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Strategic Partnerships</h3>
+                </div>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Universities, NGOs, and educational organizations — let's expand student opportunities together.
+                </p>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/partners">Explore Partnership</Link>
+                </Button>
+              </div>
+
               {/* For Investors */}
               <div className="p-6 rounded-2xl bg-gradient-primary text-white">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="h-5 w-5" />
-                  <h3 className="font-semibold">For Investors</h3>
+                  <h3 className="font-semibold">Investor Relations</h3>
                 </div>
                 <p className="text-white/80 text-sm mb-4">
-                  Interested in investing in the future of AI-powered education technology?
+                  Explore investment opportunities in AI-powered EdTech with proven traction.
                 </p>
                 <Button variant="secondary" className="w-full bg-white text-primary hover:bg-white/90" asChild>
-                  <Link to="/investors">View Investor Page</Link>
+                  <Link to="/investors">View Investor Deck</Link>
                 </Button>
               </div>
 

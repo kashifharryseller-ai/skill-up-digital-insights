@@ -47,8 +47,6 @@ const navLinks = [
   { name: "Programs", href: "/programs" },
   { name: "Scholarships", href: "/scholarships" },
   { name: "Pricing", href: "/pricing", icon: Crown, highlight: true },
-  { name: "Partners", href: "/partners" },
-  { name: "Investors", href: "/investors" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
