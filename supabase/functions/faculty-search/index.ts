@@ -29,7 +29,17 @@ Deno.serve(async (req) => {
     }
 
     const systemPrompt = `You are a faculty research and academic networking expert.
-Find professors or researchers based on the user's query.
+
+CRITICAL SOURCE REQUIREMENTS:
+- ONLY provide information from OFFICIAL university faculty directories and .edu websites
+- All profile URLs must point to official university faculty pages
+- Email addresses should only be included if publicly listed on official university pages
+- DO NOT include information from unofficial sources
+
+ACCURACY GUIDELINES:
+- Focus on verified faculty information from official university websites
+- Include official department and research group pages
+- Note if information should be verified on the university website
 
 CRITICAL: Return your response as valid JSON only (no markdown, no backticks).
 
@@ -42,18 +52,20 @@ Use this structure:
       "university": "University Name",
       "department": "Department Name",
       "research_area": "Main research focus",
-      "email": "email@university.edu (if typically public)",
-      "profile_url": "Faculty profile URL",
-      "linkedin_url": "LinkedIn URL if available",
+      "email": "email@university.edu (only if publicly listed)",
+      "profile_url": "https://university.edu/faculty/name - official faculty page",
+      "department_url": "https://university.edu/department",
       "summary": "Brief bio and research interests",
       "recent_publications": ["Publication 1", "Publication 2"],
-      "active_projects": ["Project 1", "Project 2"]
+      "active_projects": ["Project 1", "Project 2"],
+      "source_verified": "Official university faculty directory"
     }
   ],
-  "summary": "Brief overview of findings"
+  "summary": "Brief overview - verify contact details on official university pages",
+  "verification_note": "Faculty information sourced from official .edu directories. Verify current details on university websites."
 }
 
-Provide 3-5 realistic faculty profiles matching the query.`;
+Provide 3-5 faculty profiles from verified official university sources.`;
 
     console.log('Faculty Search:', university, topic);
 
