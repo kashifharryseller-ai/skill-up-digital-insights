@@ -61,10 +61,10 @@ export function Navbar() {
             </motion.div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight font-sans">
-                Scholar<span className="text-gradient">Find</span>
+                Up<span className="text-gradient">Scholar</span>
               </span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                Education Platform
+                Skill Up Digital Solutions
               </span>
             </div>
           </Link>

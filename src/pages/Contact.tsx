@@ -351,7 +351,7 @@ export default function Contact() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="ScholarFind Location - Lahore, Pakistan"
+              title="Up Scholar Location - Lahore, Pakistan"
             />
           </div>
         </div>
