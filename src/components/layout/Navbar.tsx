@@ -27,6 +27,7 @@ import {
   LogOut,
   Shield,
   User,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,6 +45,7 @@ const navLinks = [
   { name: "Home", href: "/" },
   { name: "Programs", href: "/programs" },
   { name: "Scholarships", href: "/scholarships" },
+  { name: "Pricing", href: "/pricing", icon: Crown, highlight: true },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -213,12 +215,15 @@ export function Navbar() {
                 key={link.name}
                 to={link.href}
                 className={cn(
-                  "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                  location.pathname === link.href
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center gap-1.5",
+                  link.highlight
+                    ? "text-primary bg-primary/5 hover:bg-primary/10"
+                    : location.pathname === link.href
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
+                {link.icon && <link.icon className="h-3.5 w-3.5" />}
                 {link.name}
                 {location.pathname === link.href && (
                   <motion.div
