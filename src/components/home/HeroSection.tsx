@@ -119,28 +119,6 @@ export function HeroSection() {
         />
       </div>
 
-      {/* Floating Success Card */}
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0, y: [-10, 10, -10] }}
-        transition={{
-          opacity: { duration: 0.8, delay: 0.5 },
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-        }}
-        className="absolute top-32 right-[10%] hidden xl:block z-10"
-      >
-        <div className="glass rounded-2xl p-5 shadow-2xl border border-primary/10">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-gradient-accent flex items-center justify-center shadow-lg">
-              <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
-            </div>
-            <div>
-              <p className="font-bold text-foreground">Data Verified</p>
-              <p className="text-sm text-muted-foreground">From .edu sources</p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Floating Trend Card */}
       <motion.div

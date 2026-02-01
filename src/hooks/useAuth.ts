@@ -2,11 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
+type SubscriptionTier = "free" | "premium" | "enterprise";
+
 interface Profile {
   id: string;
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  subscription_tier: SubscriptionTier;
+  subscription_approved_at: string | null;
+  subscription_approved_by: string | null;
 }
 
 interface AuthState {
@@ -14,6 +19,8 @@ interface AuthState {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isPremium: boolean; // Has approved premium/enterprise access
+  subscriptionTier: SubscriptionTier;
   isLoading: boolean;
 }
 
@@ -23,6 +30,8 @@ export function useAuth() {
     session: null,
     profile: null,
     isAdmin: false,
+    isPremium: false,
+    subscriptionTier: "free",
     isLoading: true,
   });
 
@@ -39,8 +48,16 @@ export function useAuth() {
       .eq("user_id", userId);
 
     const isAdmin = roles?.some((r) => r.role === "admin") ?? false;
+    
+    // Check if user has approved premium access
+    const isPremium = 
+      isAdmin || // Admins always have premium access
+      (profile?.subscription_tier !== "free" && 
+       profile?.subscription_approved_at !== null);
 
-    return { profile, isAdmin };
+    const subscriptionTier = (profile?.subscription_tier as SubscriptionTier) || "free";
+
+    return { profile, isAdmin, isPremium, subscriptionTier };
   }, []);
 
   useEffect(() => {
@@ -50,12 +67,14 @@ export function useAuth() {
         if (session?.user) {
           // Use setTimeout to prevent Supabase deadlock
           setTimeout(async () => {
-            const { profile, isAdmin } = await fetchProfile(session.user.id);
+            const { profile, isAdmin, isPremium, subscriptionTier } = await fetchProfile(session.user.id);
             setState({
               user: session.user,
               session,
               profile,
               isAdmin,
+              isPremium,
+              subscriptionTier,
               isLoading: false,
             });
           }, 0);
@@ -65,6 +84,8 @@ export function useAuth() {
             session: null,
             profile: null,
             isAdmin: false,
+            isPremium: false,
+            subscriptionTier: "free",
             isLoading: false,
           });
         }
@@ -74,12 +95,14 @@ export function useAuth() {
     // Then get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        const { profile, isAdmin } = await fetchProfile(session.user.id);
+        const { profile, isAdmin, isPremium, subscriptionTier } = await fetchProfile(session.user.id);
         setState({
           user: session.user,
           session,
           profile,
           isAdmin,
+          isPremium,
+          subscriptionTier,
           isLoading: false,
         });
       } else {
@@ -117,10 +140,24 @@ export function useAuth() {
     return { error };
   };
 
+  const refreshProfile = async () => {
+    if (state.user) {
+      const { profile, isAdmin, isPremium, subscriptionTier } = await fetchProfile(state.user.id);
+      setState((prev) => ({
+        ...prev,
+        profile,
+        isAdmin,
+        isPremium,
+        subscriptionTier,
+      }));
+    }
+  };
+
   return {
     ...state,
     signIn,
     signUp,
     signOut,
+    refreshProfile,
   };
 }
