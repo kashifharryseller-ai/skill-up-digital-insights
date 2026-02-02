@@ -21,6 +21,7 @@ import {
   TrendingUp,
   ArrowRight,
 } from "lucide-react";
+import malikKashifPhoto from "@/assets/malik-kashif.png";
 import { Helmet } from "react-helmet-async";
 
 const values = [
@@ -320,11 +321,19 @@ export default function About() {
                 <div className="p-8 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl transition-all">
                   <div className="flex items-start gap-6">
                     <div className="relative shrink-0">
-                      <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center">
-                        <span className="text-2xl font-bold text-primary-foreground">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </span>
-                      </div>
+                      {member.name === "Malik Kashif" ? (
+                        <img 
+                          src={malikKashifPhoto} 
+                          alt={member.name}
+                          className="w-20 h-20 rounded-2xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center">
+                          <span className="text-2xl font-bold text-primary-foreground">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                      )}
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-green-500 border-2 border-background flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-white" />
                       </div>
