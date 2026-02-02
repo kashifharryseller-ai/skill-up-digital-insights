@@ -1,9 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, authenticateRequest, checkToolAccess, recordToolUsage } from '../_shared/auth.ts';
+import { validateString, sanitizeForPrompt } from '../_shared/validation.ts';
 
 const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const TOOL_TYPE = 'scholarships';
 
 async function callLovableAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string> {
   const response = await fetch(LOVABLE_API_URL, {
@@ -38,14 +37,30 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { query, type = 'scholarships' } = await req.json();
+    // Authenticate user
+    const { user, supabaseClient, isPremium } = await authenticateRequest(req);
 
-    if (!query) {
+    // Check tool access
+    const accessCheck = await checkToolAccess(supabaseClient, user.id, TOOL_TYPE, isPremium);
+    if (!accessCheck.allowed) {
       return new Response(
-        JSON.stringify({ error: 'Query is required' }),
+        JSON.stringify({ error: accessCheck.reason }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse and validate input
+    const body = await req.json();
+    
+    const queryValidation = validateString(body.query, 'query', { maxLength: 500 });
+    if (!queryValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: queryValidation.error?.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    const query = sanitizeForPrompt(queryValidation.value!);
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
@@ -106,9 +121,12 @@ Provide 3-5 relevant results from verified official sources only.`;
 
     const userPrompt = `Find scholarship opportunities for: ${query}. Focus on current, active opportunities.`;
 
-    console.log('AI Research Query:', query, 'Type:', type);
+    console.log('AI Research Query:', query, 'User:', user.id);
 
     const content = await callLovableAI(apiKey, systemPrompt, userPrompt);
+
+    // Record usage for non-premium users
+    await recordToolUsage(supabaseClient, user.id, TOOL_TYPE, isPremium);
 
     let parsed;
     try {
@@ -126,9 +144,13 @@ Provide 3-5 relevant results from verified official sources only.`;
     );
   } catch (error) {
     console.error('Error in ai-research:', error);
+    
+    const message = error instanceof Error ? error.message : 'Research failed';
+    const status = message.includes('Unauthorized') ? 401 : 500;
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Research failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: message }),
+      { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
