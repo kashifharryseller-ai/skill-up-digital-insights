@@ -1,9 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, authenticateRequest, checkToolAccess, recordToolUsage } from '../_shared/auth.ts';
+import { validateString, sanitizeForPrompt } from '../_shared/validation.ts';
 
 const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const TOOL_TYPE = 'accreditation';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,14 +10,30 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { university } = await req.json();
+    // Authenticate user
+    const { user, supabaseClient, isPremium } = await authenticateRequest(req);
 
-    if (!university) {
+    // Check tool access
+    const accessCheck = await checkToolAccess(supabaseClient, user.id, TOOL_TYPE, isPremium);
+    if (!accessCheck.allowed) {
       return new Response(
-        JSON.stringify({ error: 'University name is required' }),
+        JSON.stringify({ error: accessCheck.reason }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse and validate input
+    const body = await req.json();
+    
+    const universityValidation = validateString(body.university, 'university', { maxLength: 200 });
+    if (!universityValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: universityValidation.error?.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const university = sanitizeForPrompt(universityValidation.value!);
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
@@ -46,7 +61,7 @@ Use this structure:
 
 Be accurate and provide realistic information about HEC recognition status.`;
 
-    console.log('HEC Check:', university);
+    console.log('HEC Check:', university, 'User:', user.id);
 
     const response = await fetch(LOVABLE_API_URL, {
       method: 'POST',
@@ -73,6 +88,9 @@ Be accurate and provide realistic information about HEC recognition status.`;
       );
     }
 
+    // Record usage for non-premium users
+    await recordToolUsage(supabaseClient, user.id, TOOL_TYPE, isPremium);
+
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '';
 
@@ -91,9 +109,13 @@ Be accurate and provide realistic information about HEC recognition status.`;
     );
   } catch (error) {
     console.error('Error in hec-verification:', error);
+    
+    const message = error instanceof Error ? error.message : 'Verification failed';
+    const status = message.includes('Unauthorized') ? 401 : 500;
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Verification failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: message }),
+      { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

@@ -1,9 +1,9 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, authenticateRequest, checkToolAccess, recordToolUsage } from '../_shared/auth.ts';
+import { validateString, sanitizeForPrompt } from '../_shared/validation.ts';
 
 const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const TOOL_TYPE = 'reviewer';
+const ALLOWED_DOC_TYPES = ['SOP', 'Research Proposal', 'Personal Statement'];
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,14 +11,45 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { document, targetUniversity, documentType = 'SOP' } = await req.json();
+    // Authenticate user
+    const { user, supabaseClient, isPremium } = await authenticateRequest(req);
 
-    if (!document) {
+    // Check tool access
+    const accessCheck = await checkToolAccess(supabaseClient, user.id, TOOL_TYPE, isPremium);
+    if (!accessCheck.allowed) {
       return new Response(
-        JSON.stringify({ error: 'Document content is required' }),
+        JSON.stringify({ error: accessCheck.reason }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse and validate input
+    const body = await req.json();
+    
+    // Validate document (max 10KB to prevent abuse)
+    const documentValidation = validateString(body.document, 'document', { maxLength: 10000 });
+    if (!documentValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: documentValidation.error?.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    // Validate target university (optional)
+    const targetUniversityValidation = validateString(body.targetUniversity, 'targetUniversity', { 
+      required: false, 
+      maxLength: 200 
+    });
+    
+    // Validate document type
+    const documentTypeValidation = validateString(body.documentType, 'documentType', { 
+      required: false, 
+      allowedValues: ALLOWED_DOC_TYPES 
+    });
+
+    const document = sanitizeForPrompt(documentValidation.value!);
+    const targetUniversity = targetUniversityValidation.value ? sanitizeForPrompt(targetUniversityValidation.value) : undefined;
+    const documentType = documentTypeValidation.value || 'SOP';
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
@@ -53,7 +84,7 @@ Use this structure:
 
 Be constructive, specific, and helpful. Score out of 100.`;
 
-    console.log('Document Review - Type:', documentType, 'Target:', targetUniversity);
+    console.log('Document Review - Type:', documentType, 'Target:', targetUniversity, 'User:', user.id);
 
     const response = await fetch(LOVABLE_API_URL, {
       method: 'POST',
@@ -80,6 +111,9 @@ Be constructive, specific, and helpful. Score out of 100.`;
       );
     }
 
+    // Record usage for non-premium users
+    await recordToolUsage(supabaseClient, user.id, TOOL_TYPE, isPremium);
+
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '';
 
@@ -98,9 +132,13 @@ Be constructive, specific, and helpful. Score out of 100.`;
     );
   } catch (error) {
     console.error('Error in document-review:', error);
+    
+    const message = error instanceof Error ? error.message : 'Review failed';
+    const status = message.includes('Unauthorized') ? 401 : 500;
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Review failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: message }),
+      { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

@@ -1,9 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, authenticateRequest, checkToolAccess, recordToolUsage } from '../_shared/auth.ts';
+import { validateString, sanitizeForPrompt } from '../_shared/validation.ts';
 
 const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const TOOL_TYPE = 'faculty';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,14 +10,39 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { university, topic } = await req.json();
+    // Authenticate user
+    const { user, supabaseClient, isPremium } = await authenticateRequest(req);
 
-    if (!university || !topic) {
+    // Check tool access
+    const accessCheck = await checkToolAccess(supabaseClient, user.id, TOOL_TYPE, isPremium);
+    if (!accessCheck.allowed) {
       return new Response(
-        JSON.stringify({ error: 'University and topic are required' }),
+        JSON.stringify({ error: accessCheck.reason }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse and validate input
+    const body = await req.json();
+    
+    const universityValidation = validateString(body.university, 'university', { maxLength: 200 });
+    if (!universityValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: universityValidation.error?.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    const topicValidation = validateString(body.topic, 'topic', { maxLength: 200 });
+    if (!topicValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: topicValidation.error?.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const university = sanitizeForPrompt(universityValidation.value!);
+    const topic = sanitizeForPrompt(topicValidation.value!);
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
@@ -67,7 +91,7 @@ Use this structure:
 
 Provide 3-5 faculty profiles from verified official university sources.`;
 
-    console.log('Faculty Search:', university, topic);
+    console.log('Faculty Search:', university, topic, 'User:', user.id);
 
     const response = await fetch(LOVABLE_API_URL, {
       method: 'POST',
@@ -94,6 +118,9 @@ Provide 3-5 faculty profiles from verified official university sources.`;
       );
     }
 
+    // Record usage for non-premium users
+    await recordToolUsage(supabaseClient, user.id, TOOL_TYPE, isPremium);
+
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '';
 
@@ -112,9 +139,13 @@ Provide 3-5 faculty profiles from verified official university sources.`;
     );
   } catch (error) {
     console.error('Error in faculty-search:', error);
+    
+    const message = error instanceof Error ? error.message : 'Search failed';
+    const status = message.includes('Unauthorized') ? 401 : 500;
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Search failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: message }),
+      { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
