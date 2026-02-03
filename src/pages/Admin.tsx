@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -21,6 +22,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
   Shield,
@@ -33,6 +45,12 @@ import {
   Crown,
   CheckCircle2,
   XCircle,
+  Search,
+  UserCog,
+  ShieldCheck,
+  ShieldX,
+  UserPlus,
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -53,14 +71,29 @@ interface UserProfile {
   created_at: string;
 }
 
+interface UserRole {
+  id: string;
+  user_id: string;
+  role: "admin" | "user";
+  created_at: string;
+}
+
+interface EnhancedUser extends UserProfile {
+  roles: UserRole[];
+  isAdmin: boolean;
+}
+
 export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, isAdmin, isLoading: authLoading } = useAuth();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<EnhancedUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterTier, setFilterTier] = useState<string>("all");
+  const [filterRole, setFilterRole] = useState<string>("all");
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -71,7 +104,7 @@ export default function Admin() {
   useEffect(() => {
     if (isAdmin) {
       fetchSubscribers();
-      fetchUsers();
+      fetchUsersWithRoles();
     }
   }, [isAdmin]);
 
@@ -94,22 +127,49 @@ export default function Admin() {
     setIsLoading(false);
   };
 
-  const fetchUsers = async () => {
+  const fetchUsersWithRoles = async () => {
     setUsersLoading(true);
-    const { data, error } = await supabase
+    
+    // Fetch profiles
+    const { data: profilesData, error: profilesError } = await supabase
       .from("profiles")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (error) {
+    if (profilesError) {
       toast({
         title: "Error",
         description: "Failed to load users",
         variant: "destructive",
       });
-    } else {
-      setUsers((data as UserProfile[]) || []);
+      setUsersLoading(false);
+      return;
     }
+
+    // Fetch all user roles
+    const { data: rolesData, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("*");
+
+    if (rolesError) {
+      toast({
+        title: "Error",
+        description: "Failed to load user roles",
+        variant: "destructive",
+      });
+    }
+
+    // Merge profiles with roles
+    const enhancedUsers: EnhancedUser[] = (profilesData || []).map((profile) => {
+      const userRoles = (rolesData || []).filter((r) => r.user_id === profile.user_id) as UserRole[];
+      return {
+        ...profile,
+        roles: userRoles,
+        isAdmin: userRoles.some((r) => r.role === "admin"),
+      } as EnhancedUser;
+    });
+
+    setUsers(enhancedUsers);
     setUsersLoading(false);
   };
 
@@ -291,6 +351,106 @@ export default function Admin() {
     }
   };
 
+  const handleGrantAdminRole = async (userId: string) => {
+    // Prevent self-demotion check is not needed for granting
+    const { error } = await supabase
+      .from("user_roles")
+      .insert({
+        user_id: userId,
+        role: "admin",
+      });
+
+    if (error) {
+      if (error.code === "23505") {
+        toast({
+          title: "Already Admin",
+          description: "This user already has admin role",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to grant admin role",
+          variant: "destructive",
+        });
+      }
+    } else {
+      // Send notification
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Admin Access Granted! 🛡️",
+        message: "You have been granted administrator privileges. You can now access the admin dashboard.",
+        type: "success",
+      });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.user_id === userId
+            ? {
+                ...u,
+                isAdmin: true,
+                roles: [...u.roles, { id: "", user_id: userId, role: "admin" as const, created_at: new Date().toISOString() }],
+              }
+            : u
+        )
+      );
+      toast({
+        title: "Success",
+        description: "Admin role granted successfully",
+      });
+    }
+  };
+
+  const handleRevokeAdminRole = async (userId: string) => {
+    // Prevent self-demotion
+    if (userId === user?.id) {
+      toast({
+        title: "Cannot Revoke",
+        description: "You cannot revoke your own admin role",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("user_roles")
+      .delete()
+      .eq("user_id", userId)
+      .eq("role", "admin");
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to revoke admin role",
+        variant: "destructive",
+      });
+    } else {
+      // Send notification
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Admin Access Revoked",
+        message: "Your administrator privileges have been revoked.",
+        type: "warning",
+      });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.user_id === userId
+            ? {
+                ...u,
+                isAdmin: false,
+                roles: u.roles.filter((r) => r.role !== "admin"),
+              }
+            : u
+        )
+      );
+      toast({
+        title: "Revoked",
+        description: "Admin role revoked successfully",
+      });
+    }
+  };
+
   const handleExport = () => {
     const csv = [
       ["Email", "Subscribed At", "Active"],
@@ -312,6 +472,29 @@ export default function Admin() {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportUsers = () => {
+    const csv = [
+      ["Display Name", "Subscription Tier", "Status", "Is Admin", "Joined"],
+      ...users.map((u) => [
+        u.display_name || "Unnamed",
+        u.subscription_tier,
+        u.subscription_tier === "free" ? "Free" : u.subscription_approved_at ? "Approved" : "Pending",
+        u.isAdmin ? "Yes" : "No",
+        format(new Date(u.created_at), "yyyy-MM-dd HH:mm"),
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `users-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (authLoading || (!user && !isAdmin)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -325,6 +508,28 @@ export default function Admin() {
     if (!approved) return "outline";
     return tier === "enterprise" ? "default" : "default";
   };
+
+  // Filter users based on search and filters
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch = 
+      !searchQuery ||
+      (u.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+    
+    const matchesTier = filterTier === "all" || u.subscription_tier === filterTier;
+    
+    const matchesRole = 
+      filterRole === "all" ||
+      (filterRole === "admin" && u.isAdmin) ||
+      (filterRole === "user" && !u.isAdmin);
+    
+    return matchesSearch && matchesTier && matchesRole;
+  });
+
+  // Stats
+  const totalAdmins = users.filter((u) => u.isAdmin).length;
+  const totalPremium = users.filter((u) => u.subscription_tier === "premium" && u.subscription_approved_at).length;
+  const totalEnterprise = users.filter((u) => u.subscription_tier === "enterprise" && u.subscription_approved_at).length;
+  const pendingApprovals = users.filter((u) => u.subscription_tier !== "free" && !u.subscription_approved_at).length;
 
   return (
     <div className="min-h-screen bg-background pt-20">
@@ -350,7 +555,7 @@ export default function Admin() {
                   Admin Dashboard
                 </h1>
                 <p className="text-muted-foreground mt-1">
-                  Manage users and subscriptions
+                  Manage users, roles, and subscriptions
                 </p>
               </div>
             </div>
@@ -358,14 +563,21 @@ export default function Admin() {
 
           {/* Tabs */}
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList>
+            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
               <TabsTrigger value="users" className="gap-2">
-                <Crown className="h-4 w-4" />
-                User Subscriptions
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">User Management</span>
+                <span className="sm:hidden">Users</span>
+              </TabsTrigger>
+              <TabsTrigger value="roles" className="gap-2">
+                <UserCog className="h-4 w-4" />
+                <span className="hidden sm:inline">Role Management</span>
+                <span className="sm:hidden">Roles</span>
               </TabsTrigger>
               <TabsTrigger value="newsletter" className="gap-2">
                 <Mail className="h-4 w-4" />
-                Newsletter
+                <span className="hidden sm:inline">Newsletter</span>
+                <span className="sm:hidden">Email</span>
               </TabsTrigger>
             </TabsList>
 
@@ -390,9 +602,7 @@ export default function Admin() {
                       <Crown className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">
-                        {users.filter((u) => u.subscription_tier === "premium" && u.subscription_approved_at).length}
-                      </p>
+                      <p className="text-2xl font-bold">{totalPremium}</p>
                       <p className="text-sm text-muted-foreground">Premium</p>
                     </div>
                   </div>
@@ -403,9 +613,7 @@ export default function Admin() {
                       <Shield className="h-6 w-6 text-accent-foreground" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">
-                        {users.filter((u) => u.subscription_tier === "enterprise" && u.subscription_approved_at).length}
-                      </p>
+                      <p className="text-2xl font-bold">{totalEnterprise}</p>
                       <p className="text-sm text-muted-foreground">Enterprise</p>
                     </div>
                   </div>
@@ -416,12 +624,48 @@ export default function Admin() {
                       <Loader2 className="h-6 w-6 text-yellow-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">
-                        {users.filter((u) => u.subscription_tier !== "free" && !u.subscription_approved_at).length}
-                      </p>
+                      <p className="text-2xl font-bold">{pendingApprovals}</p>
                       <p className="text-sm text-muted-foreground">Pending</p>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Search and Filters */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={filterTier} onValueChange={setFilterTier}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder="All Tiers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tiers</SelectItem>
+                    <SelectItem value="free">Free</SelectItem>
+                    <SelectItem value="premium">Premium</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={fetchUsersWithRoles}
+                    title="Refresh"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                  <Button onClick={handleExportUsers} variant="outline" className="gap-2">
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline">Export</span>
+                  </Button>
                 </div>
               </div>
 
@@ -431,6 +675,7 @@ export default function Admin() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>User</TableHead>
+                      <TableHead>Role</TableHead>
                       <TableHead>Plan</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Joined</TableHead>
@@ -440,21 +685,41 @@ export default function Admin() {
                   <TableBody>
                     {usersLoading ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8">
+                        <TableCell colSpan={6} className="text-center py-8">
                           <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                         </TableCell>
                       </TableRow>
-                    ) : users.length === 0 ? (
+                    ) : filteredUsers.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No users yet
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          {searchQuery || filterTier !== "all" ? "No users match your filters" : "No users yet"}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      users.map((profile) => (
+                      filteredUsers.map((profile) => (
                         <TableRow key={profile.id}>
                           <TableCell className="font-medium">
-                            {profile.display_name || "Unnamed User"}
+                            <div className="flex items-center gap-2">
+                              {profile.display_name || "Unnamed User"}
+                              {profile.user_id === user?.id && (
+                                <Badge variant="outline" className="text-xs">You</Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={profile.isAdmin ? "default" : "secondary"}
+                              className={profile.isAdmin ? "bg-primary/10 text-primary border-primary/20" : ""}
+                            >
+                              {profile.isAdmin ? (
+                                <span className="flex items-center gap-1">
+                                  <Shield className="h-3 w-3" />
+                                  Admin
+                                </span>
+                              ) : (
+                                "User"
+                              )}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             <Select
@@ -522,6 +787,227 @@ export default function Admin() {
                                   </Button>
                                 )}
                               </>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+
+            {/* Roles Tab */}
+            <TabsContent value="roles" className="space-y-6">
+              {/* Stats Cards */}
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="p-6 rounded-2xl bg-card border border-border">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Users className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{users.length}</p>
+                      <p className="text-sm text-muted-foreground">Total Users</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 rounded-2xl bg-card border border-border">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Shield className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{totalAdmins}</p>
+                      <p className="text-sm text-muted-foreground">Administrators</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 rounded-2xl bg-card border border-border">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
+                      <Users className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{users.length - totalAdmins}</p>
+                      <p className="text-sm text-muted-foreground">Regular Users</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search and Filter */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={filterRole} onValueChange={setFilterRole}>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder="All Roles" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="admin">Admins Only</SelectItem>
+                    <SelectItem value="user">Users Only</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={fetchUsersWithRoles}
+                  title="Refresh"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Info Banner */}
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div className="flex items-start gap-3">
+                  <Shield className="h-5 w-5 text-primary mt-0.5" />
+                  <div>
+                    <p className="font-medium text-sm">Role Management</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Administrators have full access to this dashboard and can manage users, subscriptions, and roles.
+                      Be careful when granting admin access.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Roles Table */}
+              <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Current Role</TableHead>
+                      <TableHead>Subscription</TableHead>
+                      <TableHead>Joined</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {usersLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ) : filteredUsers.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          {searchQuery || filterRole !== "all" ? "No users match your filters" : "No users yet"}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredUsers.map((profile) => (
+                        <TableRow key={profile.id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {profile.display_name || "Unnamed User"}
+                              {profile.user_id === user?.id && (
+                                <Badge variant="outline" className="text-xs">You</Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={profile.isAdmin ? "default" : "secondary"}
+                              className={profile.isAdmin ? "bg-primary text-primary-foreground" : ""}
+                            >
+                              {profile.isAdmin ? (
+                                <span className="flex items-center gap-1">
+                                  <ShieldCheck className="h-3 w-3" />
+                                  Administrator
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1">
+                                  <Users className="h-3 w-3" />
+                                  User
+                                </span>
+                              )}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">
+                              {profile.subscription_tier}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(profile.created_at), "MMM d, yyyy")}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {profile.isAdmin ? (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-destructive hover:text-destructive gap-1"
+                                    disabled={profile.user_id === user?.id}
+                                  >
+                                    <ShieldX className="h-4 w-4" />
+                                    Revoke Admin
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Revoke Admin Access?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will remove administrator privileges from{" "}
+                                      <strong>{profile.display_name || "this user"}</strong>.
+                                      They will no longer be able to access the admin dashboard.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleRevokeAdminRole(profile.user_id)}
+                                      className="bg-destructive hover:bg-destructive/90"
+                                    >
+                                      Revoke Admin
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            ) : (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-primary hover:text-primary gap-1"
+                                  >
+                                    <UserPlus className="h-4 w-4" />
+                                    Make Admin
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Grant Admin Access?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will give <strong>{profile.display_name || "this user"}</strong> full
+                                      administrator privileges. They will be able to manage all users,
+                                      subscriptions, and roles.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleGrantAdminRole(profile.user_id)}
+                                    >
+                                      Grant Admin
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                           </TableCell>
                         </TableRow>
