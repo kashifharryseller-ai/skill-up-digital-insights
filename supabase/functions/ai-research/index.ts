@@ -1,3 +1,4 @@
+// AI Research Edge Function - Scholarship Search
 import { corsHeaders, authenticateRequest, checkToolAccess, recordToolUsage } from '../_shared/auth.ts';
 import { validateString, sanitizeForPrompt } from '../_shared/validation.ts';
 
