@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { adminApi, type EnhancedUser, type Subscriber } from "@/lib/api/admin";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -54,35 +54,6 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-interface Subscriber {
-  id: string;
-  email: string;
-  subscribed_at: string;
-  is_active: boolean;
-}
-
-interface UserProfile {
-  id: string;
-  user_id: string;
-  display_name: string | null;
-  subscription_tier: "free" | "premium" | "enterprise";
-  subscription_approved_at: string | null;
-  subscription_approved_by: string | null;
-  created_at: string;
-}
-
-interface UserRole {
-  id: string;
-  user_id: string;
-  role: "admin" | "user";
-  created_at: string;
-}
-
-interface EnhancedUser extends UserProfile {
-  roles: UserRole[];
-  isAdmin: boolean;
-}
-
 export default function Admin() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -110,79 +81,45 @@ export default function Admin() {
 
   const fetchSubscribers = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("newsletter_subscribers")
-      .select("*")
-      .order("subscribed_at", { ascending: false });
+    const { data, error } = await adminApi.getSubscribers();
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to load subscribers",
+        description: error,
         variant: "destructive",
       });
     } else {
-      setSubscribers(data || []);
+      setSubscribers(data?.subscribers || []);
     }
     setIsLoading(false);
   };
 
   const fetchUsersWithRoles = async () => {
     setUsersLoading(true);
-    
-    // Fetch profiles
-    const { data: profilesData, error: profilesError } = await supabase
-      .from("profiles")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await adminApi.getUsers();
 
-    if (profilesError) {
+    if (error) {
       toast({
         title: "Error",
-        description: "Failed to load users",
+        description: error,
         variant: "destructive",
       });
       setUsersLoading(false);
       return;
     }
 
-    // Fetch all user roles
-    const { data: rolesData, error: rolesError } = await supabase
-      .from("user_roles")
-      .select("*");
-
-    if (rolesError) {
-      toast({
-        title: "Error",
-        description: "Failed to load user roles",
-        variant: "destructive",
-      });
-    }
-
-    // Merge profiles with roles
-    const enhancedUsers: EnhancedUser[] = (profilesData || []).map((profile) => {
-      const userRoles = (rolesData || []).filter((r) => r.user_id === profile.user_id) as UserRole[];
-      return {
-        ...profile,
-        roles: userRoles,
-        isAdmin: userRoles.some((r) => r.role === "admin"),
-      } as EnhancedUser;
-    });
-
-    setUsers(enhancedUsers);
+    setUsers(data?.users || []);
     setUsersLoading(false);
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("newsletter_subscribers")
-      .delete()
-      .eq("id", id);
+    const { error } = await adminApi.deleteSubscriber(id);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to delete subscriber",
+        description: error,
         variant: "destructive",
       });
     } else {
@@ -195,15 +132,12 @@ export default function Admin() {
   };
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
-    const { error } = await supabase
-      .from("newsletter_subscribers")
-      .update({ is_active: !currentActive })
-      .eq("id", id);
+    const { error } = await adminApi.updateSubscriber(id, !currentActive);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to update subscriber",
+        description: error,
         variant: "destructive",
       });
     } else {
@@ -219,32 +153,15 @@ export default function Admin() {
     userId: string,
     tier: "free" | "premium" | "enterprise"
   ) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        subscription_tier: tier,
-        subscription_approved_at: tier === "free" ? null : new Date().toISOString(),
-        subscription_approved_by: tier === "free" ? null : user?.id,
-      })
-      .eq("user_id", userId);
+    const { error } = await adminApi.updateSubscription(userId, tier);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to update subscription",
+        description: error,
         variant: "destructive",
       });
     } else {
-      // Send notification to user if upgrading to premium/enterprise
-      if (tier !== "free") {
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          title: `Subscription Upgraded to ${tier.charAt(0).toUpperCase() + tier.slice(1)}!`,
-          message: `Your ${tier} subscription has been approved. You now have access to all ${tier} features. Enjoy!`,
-          type: "subscription",
-        });
-      }
-
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -266,31 +183,15 @@ export default function Admin() {
   };
 
   const handleApproveSubscription = async (userId: string) => {
-    const userProfile = users.find((u) => u.user_id === userId);
-    
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        subscription_approved_at: new Date().toISOString(),
-        subscription_approved_by: user?.id,
-      })
-      .eq("user_id", userId);
+    const { error } = await adminApi.approveSubscription(userId);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to approve subscription",
+        description: error,
         variant: "destructive",
       });
     } else {
-      // Send notification to user
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Subscription Approved! 🎉",
-        message: `Your ${userProfile?.subscription_tier || "premium"} subscription has been approved. You now have full access to all premium features.`,
-        type: "subscription",
-      });
-
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -310,29 +211,15 @@ export default function Admin() {
   };
 
   const handleRevokeSubscription = async (userId: string) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        subscription_approved_at: null,
-        subscription_approved_by: null,
-      })
-      .eq("user_id", userId);
+    const { error } = await adminApi.revokeSubscription(userId);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to revoke subscription",
+        description: error,
         variant: "destructive",
       });
     } else {
-      // Send notification to user
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Subscription Access Revoked",
-        message: "Your premium subscription access has been revoked. Please contact support if you have any questions.",
-        type: "warning",
-      });
-
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -352,37 +239,15 @@ export default function Admin() {
   };
 
   const handleGrantAdminRole = async (userId: string) => {
-    // Prevent self-demotion check is not needed for granting
-    const { error } = await supabase
-      .from("user_roles")
-      .insert({
-        user_id: userId,
-        role: "admin",
-      });
+    const { error } = await adminApi.grantAdminRole(userId);
 
     if (error) {
-      if (error.code === "23505") {
-        toast({
-          title: "Already Admin",
-          description: "This user already has admin role",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to grant admin role",
-          variant: "destructive",
-        });
-      }
-    } else {
-      // Send notification
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Admin Access Granted! 🛡️",
-        message: "You have been granted administrator privileges. You can now access the admin dashboard.",
-        type: "success",
+      toast({
+        title: "Error",
+        description: error,
+        variant: "destructive",
       });
-
+    } else {
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
@@ -402,7 +267,6 @@ export default function Admin() {
   };
 
   const handleRevokeAdminRole = async (userId: string) => {
-    // Prevent self-demotion
     if (userId === user?.id) {
       toast({
         title: "Cannot Revoke",
@@ -412,27 +276,15 @@ export default function Admin() {
       return;
     }
 
-    const { error } = await supabase
-      .from("user_roles")
-      .delete()
-      .eq("user_id", userId)
-      .eq("role", "admin");
+    const { error } = await adminApi.revokeAdminRole(userId);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to revoke admin role",
+        description: error,
         variant: "destructive",
       });
     } else {
-      // Send notification
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Admin Access Revoked",
-        message: "Your administrator privileges have been revoked.",
-        type: "warning",
-      });
-
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === userId
