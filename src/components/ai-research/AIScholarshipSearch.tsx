@@ -22,7 +22,13 @@ import {
   ShieldCheck,
   Gift,
   Lock,
+  RefreshCw,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
+
+const MAX_RETRIES = 3;
+const TIMEOUT_MS = 45000; // 45 seconds
 
 export function AIScholarshipSearch() {
   const { toast } = useToast();
@@ -34,6 +40,85 @@ export function AIScholarshipSearch() {
   const [results, setResults] = useState<AISearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastQuery, setLastQuery] = useState("");
+
+  const getErrorMessage = (err: unknown, attempt: number): string => {
+    const errorStr = err instanceof Error ? err.message : String(err);
+    
+    if (errorStr.includes("Failed to fetch") || errorStr.includes("NetworkError") || errorStr.includes("Failed to send")) {
+      return "Unable to connect to the AI service. Please check your internet connection and try again.";
+    }
+    if (errorStr.includes("timeout") || errorStr.includes("Timeout")) {
+      return "The request took too long. The AI service might be busy. Please try again.";
+    }
+    if (errorStr.includes("401") || errorStr.includes("Unauthorized")) {
+      return "Your session has expired. Please log in again to continue.";
+    }
+    if (errorStr.includes("403") || errorStr.includes("Forbidden")) {
+      return "Access denied. You may need to upgrade your subscription.";
+    }
+    if (errorStr.includes("500") || errorStr.includes("Internal")) {
+      return "The AI service encountered an error. Our team has been notified. Please try again later.";
+    }
+    if (errorStr.includes("Edge Function")) {
+      return "Unable to reach the backend service. This may be a temporary issue. Please retry.";
+    }
+    
+    return attempt < MAX_RETRIES 
+      ? `Search attempt ${attempt} failed. Retrying...` 
+      : "Search failed after multiple attempts. Please try again later.";
+  };
+
+  const searchWithRetry = async (searchQuery: string, attempt: number = 1): Promise<void> => {
+    try {
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("Request timeout")), TIMEOUT_MS);
+      });
+
+      // Race between the API call and timeout
+      const response = await Promise.race([
+        aiResearchApi.searchScholarships(searchQuery),
+        timeoutPromise
+      ]);
+
+      if (response.success && response.data) {
+        setResults(response.data);
+        setError(null);
+        setRetryCount(0);
+        addToHistory(searchQuery);
+        toast({
+          title: "Search Complete",
+          description: `Found ${response.data.universities?.length || 0} universities with scholarships`,
+        });
+      } else {
+        throw new Error(response.error || "Search failed");
+      }
+    } catch (err) {
+      console.error(`Search attempt ${attempt} failed:`, err);
+      
+      if (attempt < MAX_RETRIES) {
+        setRetryCount(attempt);
+        toast({
+          title: `Retrying (${attempt}/${MAX_RETRIES})`,
+          description: "The request failed. Automatically retrying...",
+        });
+        // Exponential backoff: 1s, 2s, 4s
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+        return searchWithRetry(searchQuery, attempt + 1);
+      }
+      
+      const errorMessage = getErrorMessage(err, attempt);
+      setError(errorMessage);
+      setRetryCount(0);
+      toast({
+        title: "Search Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSearch = async (searchQuery?: string) => {
     const activeQuery = searchQuery || query;
@@ -63,6 +148,8 @@ export function AIScholarshipSearch() {
     setIsLoading(true);
     setError(null);
     setResults(null);
+    setLastQuery(activeQuery);
+    setRetryCount(0);
 
     try {
       // Record free search usage if not premium
@@ -70,32 +157,15 @@ export function AIScholarshipSearch() {
         await recordFreeSearchUsage();
       }
 
-      const response = await aiResearchApi.searchScholarships(activeQuery);
-
-      if (response.success && response.data) {
-        setResults(response.data);
-        addToHistory(activeQuery);
-        toast({
-          title: "Search Complete",
-          description: `Found ${response.data.universities?.length || 0} universities with scholarships`,
-        });
-      } else {
-        setError(response.error || "Search failed");
-        toast({
-          title: "Search Failed",
-          description: response.error,
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      setError("An unexpected error occurred");
-      toast({
-        title: "Error",
-        description: "Failed to search. Please try again.",
-        variant: "destructive",
-      });
+      await searchWithRetry(activeQuery);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRetry = () => {
+    if (lastQuery) {
+      handleSearch(lastQuery);
     }
   };
 
@@ -242,9 +312,14 @@ export function AIScholarshipSearch() {
                 </div>
               </div>
             </div>
-            <p className="text-lg font-semibold mb-2">Researching Scholarships...</p>
+            <p className="text-lg font-semibold mb-2">
+              {retryCount > 0 ? `Retrying... (Attempt ${retryCount + 1}/${MAX_RETRIES})` : "Researching Scholarships..."}
+            </p>
             <p className="text-sm text-muted-foreground">
-              Analyzing global scholarship databases
+              {retryCount > 0 ? "Previous attempt failed, trying again..." : "Analyzing global scholarship databases"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              This may take up to 45 seconds
             </p>
           </motion.div>
         )}
@@ -255,12 +330,46 @@ export function AIScholarshipSearch() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center gap-4"
+          className="p-6 rounded-2xl bg-destructive/10 border border-destructive/20"
         >
-          <AlertCircle className="h-6 w-6 text-destructive shrink-0" />
-          <div>
-            <p className="font-semibold text-destructive">Search Failed</p>
-            <p className="text-sm text-muted-foreground">{error}</p>
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-destructive/20">
+              {error.includes("internet") || error.includes("connect") ? (
+                <WifiOff className="h-6 w-6 text-destructive" />
+              ) : (
+                <AlertCircle className="h-6 w-6 text-destructive" />
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-destructive mb-1">Search Failed</p>
+              <p className="text-sm text-muted-foreground mb-4">{error}</p>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-destructive/30 hover:bg-destructive/10"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Try Again
+                </Button>
+                {error.includes("session") && (
+                  <Button
+                    onClick={() => setAuthModalOpen(true)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    Log In Again
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-destructive/20">
+            <p className="text-xs text-muted-foreground">
+              <strong>Troubleshooting tips:</strong> Check your internet connection, try refreshing the page, 
+              or wait a moment and retry. If the problem persists, our team has been notified.
+            </p>
           </div>
         </motion.div>
       )}
