@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIScholarshipSearch } from "@/components/ai-research/AIScholarshipSearch";
 import { FacultySearch } from "@/components/ai-research/FacultySearch";
-import { HecVerification } from "@/components/ai-research/HecVerification";
+
 import { DocumentReviewer } from "@/components/ai-research/DocumentReviewer";
 import { SavedItems } from "@/components/ai-research/SavedItems";
 import { UpgradePrompt } from "@/components/upgrade/UpgradePrompt";
@@ -16,25 +16,24 @@ import {
   Sparkles,
   GraduationCap,
   User,
-  Shield,
+  
   FileText,
   Bookmark,
   Brain,
   Lock,
 } from "lucide-react";
 
-type TabValue = 'scholarships' | 'faculty' | 'accreditation' | 'reviewer' | 'saved';
+type TabValue = 'scholarships' | 'faculty' | 'reviewer' | 'saved';
 
 const tabs = [
   { value: 'scholarships' as TabValue, label: 'Scholarships', icon: GraduationCap, premium: false },
   { value: 'faculty' as TabValue, label: 'Faculty', icon: User, premium: true },
-  { value: 'accreditation' as TabValue, label: 'Accreditation', icon: Shield, premium: true },
   { value: 'reviewer' as TabValue, label: 'Reviewer', icon: FileText, premium: true },
   { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark, premium: false },
 ];
 
-const validTabs: TabValue[] = ['scholarships', 'faculty', 'accreditation', 'reviewer', 'saved'];
-const premiumTabs: TabValue[] = ['faculty', 'accreditation', 'reviewer'];
+const validTabs: TabValue[] = ['scholarships', 'faculty', 'reviewer', 'saved'];
+const premiumTabs: TabValue[] = ['faculty', 'reviewer'];
 
 export default function AIResearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -108,7 +107,7 @@ export default function AIResearch() {
               <br />Research Engine
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover scholarships, find faculty supervisors, verify accreditation,
+              Discover scholarships, find faculty supervisors,
               and get AI feedback on your application documents—all in one place.
             </p>
           </motion.div>
@@ -152,9 +151,7 @@ export default function AIResearch() {
               {renderTabContent('faculty', FacultySearch, 'Faculty Search & Matching')}
             </TabsContent>
 
-            <TabsContent value="accreditation" className="mt-0">
-              {renderTabContent('accreditation', HecVerification, 'HEC Verification Tools')}
-            </TabsContent>
+
 
             <TabsContent value="reviewer" className="mt-0">
               {renderTabContent('reviewer', DocumentReviewer, 'AI Document Review')}

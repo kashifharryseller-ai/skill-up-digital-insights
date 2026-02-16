@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type {
   AISearchResponse,
   AIProfessor,
-  HecRecognition,
+  
   DocumentReview,
 } from '@/types/ai-research';
 
@@ -47,23 +47,6 @@ export const aiResearchApi = {
       return { success: true, data };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : 'Search failed' };
-    }
-  },
-
-  // Check HEC recognition
-  async checkHecRecognition(university: string): Promise<AIResponse<HecRecognition>> {
-    try {
-      const { data, error } = await supabase.functions.invoke('hec-verification', {
-        body: { university },
-      });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data };
-    } catch (err) {
-      return { success: false, error: err instanceof Error ? err.message : 'Verification failed' };
     }
   },
 
