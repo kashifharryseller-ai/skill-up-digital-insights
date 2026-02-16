@@ -7,32 +7,33 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIScholarshipSearch } from "@/components/ai-research/AIScholarshipSearch";
 import { FacultySearch } from "@/components/ai-research/FacultySearch";
-
 import { DocumentReviewer } from "@/components/ai-research/DocumentReviewer";
 import { SavedItems } from "@/components/ai-research/SavedItems";
+import { ScholarshipAssistant } from "@/components/ai-research/ScholarshipAssistant";
 import { UpgradePrompt } from "@/components/upgrade/UpgradePrompt";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Sparkles,
   GraduationCap,
   User,
-  
   FileText,
   Bookmark,
   Brain,
   Lock,
+  MessageCircle,
 } from "lucide-react";
 
-type TabValue = 'scholarships' | 'faculty' | 'reviewer' | 'saved';
+type TabValue = 'scholarships' | 'faculty' | 'reviewer' | 'saved' | 'assistant';
 
 const tabs = [
   { value: 'scholarships' as TabValue, label: 'Scholarships', icon: GraduationCap, premium: false },
   { value: 'faculty' as TabValue, label: 'Faculty', icon: User, premium: true },
   { value: 'reviewer' as TabValue, label: 'Reviewer', icon: FileText, premium: true },
+  { value: 'assistant' as TabValue, label: 'Assistant', icon: MessageCircle, premium: false },
   { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark, premium: false },
 ];
 
-const validTabs: TabValue[] = ['scholarships', 'faculty', 'reviewer', 'saved'];
+const validTabs: TabValue[] = ['scholarships', 'faculty', 'reviewer', 'assistant', 'saved'];
 const premiumTabs: TabValue[] = ['faculty', 'reviewer'];
 
 export default function AIResearch() {
@@ -155,6 +156,10 @@ export default function AIResearch() {
 
             <TabsContent value="reviewer" className="mt-0">
               {renderTabContent('reviewer', DocumentReviewer, 'AI Document Review')}
+            </TabsContent>
+
+            <TabsContent value="assistant" className="mt-0">
+              <ScholarshipAssistant />
             </TabsContent>
 
             <TabsContent value="saved" className="mt-0">
