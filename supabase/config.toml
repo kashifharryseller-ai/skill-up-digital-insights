@@ -2,3 +2,6 @@ project_id = "rhnjyxwdgglvydnqulcc"
 
 [functions.admin-operations]
 verify_jwt = false
+
+[functions.scholarship-assistant]
+verify_jwt = false
