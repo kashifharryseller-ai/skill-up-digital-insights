@@ -58,7 +58,6 @@ const strategyItems = [
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "Browse Database", href: "/scholarships" },
   { name: "Pricing", href: "/pricing", icon: Crown, highlight: true },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
