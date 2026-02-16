@@ -21,7 +21,6 @@ import {
   ChevronDown,
   Search,
   Users,
-  ShieldCheck,
   FileCheck,
   Bookmark,
   LogOut,
@@ -43,7 +42,7 @@ import { NotificationBell } from "./NotificationBell";
 const aiToolsItems = [
   { name: "AI Scholarship Search", href: "/ai-research?tab=scholarships", icon: Search, description: "Find opportunities with AI" },
   { name: "Faculty Finder", href: "/ai-research?tab=faculty", icon: Users, description: "Connect with professors" },
-  { name: "HEC Verification", href: "/ai-research?tab=accreditation", icon: ShieldCheck, description: "Check university recognition" },
+  
   { name: "Document Reviewer", href: "/ai-research?tab=reviewer", icon: FileCheck, description: "AI feedback on your SOP" },
   { name: "Saved Items", href: "/ai-research?tab=saved", icon: Bookmark, description: "Your bookmarked items" },
 ];
