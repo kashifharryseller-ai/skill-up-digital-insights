@@ -31,13 +31,6 @@ const features = [
     color: "from-success to-success/60",
   },
   {
-    icon: Users,
-    title: "HEC Verification",
-    description:
-      "Check if universities are recognized by Pakistan's HEC.",
-    color: "from-warning to-warning/60",
-  },
-  {
     icon: Lightbulb,
     title: "Document Review",
     description:

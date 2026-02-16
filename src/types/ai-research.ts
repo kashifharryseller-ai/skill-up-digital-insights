@@ -37,14 +37,6 @@ export interface AIUniversityData {
   professors?: AIProfessor[];
 }
 
-export interface HecRecognition {
-  university: string;
-  country: string;
-  status: 'Recognized' | 'Not Recognized' | 'Conditional';
-  category?: string;
-  verification_details: string;
-  warning_notes?: string;
-}
 
 export interface DocumentReview {
   overall_score: number;
