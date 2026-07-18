@@ -178,7 +178,7 @@ export function ScholarshipAssistant() {
               <Bot className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-medium">UpScholar AI Assistant</p>
+              <p className="text-sm font-medium">Schola X</p>
               <p className="text-xs text-muted-foreground">Scholarship guidance</p>
             </div>
           </div>
