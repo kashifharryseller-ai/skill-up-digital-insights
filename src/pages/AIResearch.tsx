@@ -29,7 +29,7 @@ const tabs = [
   { value: 'scholarships' as TabValue, label: 'Scholarships', icon: GraduationCap, premium: false },
   { value: 'faculty' as TabValue, label: 'Faculty', icon: User, premium: true },
   { value: 'reviewer' as TabValue, label: 'Reviewer', icon: FileText, premium: true },
-  { value: 'assistant' as TabValue, label: 'Assistant', icon: MessageCircle, premium: false },
+  { value: 'assistant' as TabValue, label: 'Schola X', icon: MessageCircle, premium: false },
   { value: 'saved' as TabValue, label: 'Saved', icon: Bookmark, premium: false },
 ];
 
