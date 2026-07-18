@@ -38,7 +38,7 @@ const faqCategories = [
         answer: "Use our AI-powered scholarship search on the AI Research page. Simply describe your background, field of study, target country, and preferences in natural language (e.g., 'Fully funded CS masters in Germany for Pakistani students'). Our AI analyzes thousands of scholarships and returns the most relevant matches with eligibility details, deadlines, and application links."
       },
       {
-        question: "Are the scholarships on Up Scholar verified?",
+        question: "Are the scholarships on Schola X verified?",
         answer: "Yes! We only list scholarships from verified official sources — university websites, government portals, and established scholarship organizations. Our AI regularly updates the database to ensure accuracy of deadlines and requirements. Each scholarship includes a direct link to the official source."
       },
       {
@@ -98,7 +98,7 @@ const faqCategories = [
     description: "Using our AI-powered features",
     faqs: [
       {
-        question: "What AI tools does Up Scholar offer?",
+        question: "What AI tools does Schola X offer?",
         answer: "We offer 4 powerful AI tools: 1) AI Scholarship Search — find scholarships using natural language, 2) AI Document Review — get feedback on your SOP, CV, and essays, 3) Faculty Search — find professors matching your research interests, 4) HEC Verification — check university recognition status. Each tool includes 1 free trial for new users."
       },
       {
@@ -214,7 +214,7 @@ const faqCategories = [
         answer: "Yes! Check our About page for platform overview. Each AI tool has built-in guidance. Premium users get onboarding assistance. Enterprise customers receive full training sessions. We're also building video tutorials — subscribe to our newsletter for updates."
       },
       {
-        question: "Can I partner with Up Scholar?",
+        question: "Can I partner with Schola X?",
         answer: "Absolutely! We partner with universities, NGOs, educational consultancies, and organizations. Visit our Partners page to learn about partnership models, or contact us via the Contact page with your proposal. We're always looking to expand student opportunities."
       }
     ]
@@ -254,8 +254,8 @@ export default function FAQ() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>FAQ - Frequently Asked Questions | Up Scholar</title>
-        <meta name="description" content="Find answers to common questions about Up Scholar's AI-powered scholarship search, application guidance, pricing, and more. Get help with your scholarship journey." />
+        <title>FAQ - Frequently Asked Questions | Schola X</title>
+        <meta name="description" content="Find answers to common questions about Schola X's AI-powered scholarship search, application guidance, pricing, and more. Get help with your scholarship journey." />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Navbar />
@@ -286,7 +286,7 @@ export default function FAQ() {
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Find answers to {totalFaqs}+ common questions about scholarships, 
-              applications, AI tools, and everything Up Scholar.
+              applications, AI tools, and everything Schola X.
             </p>
 
             {/* Search */}

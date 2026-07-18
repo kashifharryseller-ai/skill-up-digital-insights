@@ -182,7 +182,7 @@ export default function Profile() {
 
   const handleUpgrade = () => {
     const message = encodeURIComponent(
-      `Hi! I'd like to upgrade my UpScholar subscription to Premium.\n\nEmail: ${user.email}\nCurrent Plan: ${subscriptionTier}`
+      `Hi! I'd like to upgrade my Schola X subscription to Premium.\n\nEmail: ${user.email}\nCurrent Plan: ${subscriptionTier}`
     );
     window.open(`https://wa.me/923436148715?text=${message}`, "_blank");
   };

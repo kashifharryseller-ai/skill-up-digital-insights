@@ -81,7 +81,7 @@ const team = [
     role: "CEO & Founder",
     titles: ["Senior Software Engineer", "Product Manager", "Entrepreneur"],
     location: "Lahore, Pakistan",
-    bio: "Visionary leader driving Up Scholar's mission to democratize education access through AI. Full-stack developer with expertise in building scalable EdTech solutions.",
+    bio: "Visionary leader driving Schola X's mission to democratize education access through AI. Full-stack developer with expertise in building scalable EdTech solutions.",
     linkedin: "#",
   },
   {
@@ -89,13 +89,13 @@ const team = [
     role: "Co-Founder & CTO",
     titles: ["Software Engineer", "Backend Architect"],
     location: "Lahore, Pakistan",
-    bio: "Technical mastermind behind Up Scholar's AI infrastructure. Passionate about leveraging technology to help students find opportunities.",
+    bio: "Technical mastermind behind Schola X's AI infrastructure. Passionate about leveraging technology to help students find opportunities.",
     linkedin: "#",
   },
 ];
 
 const milestones = [
-  { year: "2026", title: "Founded", description: "Up Scholar launched by Skill Up Digital Solutions" },
+  { year: "2026", title: "Founded", description: "Schola X launched by Skill Up Digital Solutions" },
   { year: "2026", title: "AI Integration", description: "Launched AI-powered scholarship matching engine" },
   { year: "2026", title: "10K Users", description: "Reached 10,000 active users milestone" },
 ];
@@ -104,8 +104,8 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Skill Up Digital Solutions",
-  description: "Up Scholar - AI-powered scholarship search platform connecting students with educational funding opportunities",
-  url: "https://upscholar.com",
+  description: "Schola X - AI-powered scholarship search platform connecting students with educational funding opportunities",
+  url: "https://Schola X.com",
   foundingDate: "2026",
   founders: [
     { "@type": "Person", name: "Malik Kashif", jobTitle: "CEO & Founder" },
@@ -128,8 +128,8 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>About Up Scholar - AI-Powered Education Platform | Skill Up Digital Solutions</title>
-        <meta name="description" content="Up Scholar by Skill Up Digital Solutions - AI-powered scholarship search platform. Founded by Malik Kashif (CEO) and Inam Ul Haq, software engineers from Lahore, Pakistan." />
+        <title>About Schola X - AI-Powered Education Platform | Skill Up Digital Solutions</title>
+        <meta name="description" content="Schola X by Skill Up Digital Solutions - AI-powered scholarship search platform. Founded by Malik Kashif (CEO) and Inam Ul Haq, software engineers from Lahore, Pakistan." />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Navbar />
@@ -159,7 +159,7 @@ export default function About() {
               <span className="text-gradient">Artificial Intelligence</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Up Scholar leverages cutting-edge AI to connect students with scholarships, 
+              Schola X leverages cutting-edge AI to connect students with scholarships, 
               research opportunities, and educational resources worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -403,7 +403,7 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Up Scholar was born from a simple observation: talented students often miss life-changing opportunities 
+                  Schola X was born from a simple observation: talented students often miss life-changing opportunities 
                   simply because they don't know they exist or can't navigate complex application processes.
                 </p>
                 <p>
@@ -493,7 +493,7 @@ export default function About() {
                 Ready to Find Your Perfect Scholarship?
               </h2>
               <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-                Join thousands of students who've discovered life-changing opportunities through Up Scholar's AI-powered platform.
+                Join thousands of students who've discovered life-changing opportunities through Schola X's AI-powered platform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>

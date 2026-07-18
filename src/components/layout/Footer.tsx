@@ -143,7 +143,7 @@ export function Footer() {
                 <GraduationCap className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <span className="text-2xl font-bold text-background">Up Scholar</span>
+                <span className="text-2xl font-bold text-background">Schola X</span>
                 <p className="text-xs text-background/60 uppercase tracking-widest">Skill Up Digital Solutions</p>
               </div>
             </Link>

@@ -13,7 +13,7 @@ interface UpgradePromptProps {
 
 export function UpgradePrompt({ feature = "this feature", compact = false }: UpgradePromptProps) {
   const whatsAppLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi! I'm interested in upgrading to Premium to access ${feature} on Up Scholar. Please share more details.`
+    `Hi! I'm interested in upgrading to Premium to access ${feature} on Schola X. Please share more details.`
   )}`;
 
   if (compact) {

@@ -22,7 +22,7 @@ Rules:
 - Keep responses concise but helpful (under 300 words)
 - Use bullet points for lists
 - Always suggest next steps the student can take
-- When appropriate, mention that UpScholar's AI tools (Scholarship Search, Faculty Finder, Document Reviewer) can help further`;
+- When appropriate, mention that Schola X's AI tools (Scholarship Search, Faculty Finder, Document Reviewer) can help further`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

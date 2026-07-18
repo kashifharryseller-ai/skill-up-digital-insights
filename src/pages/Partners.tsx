@@ -92,10 +92,10 @@ export default function Partners() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Partner With Up Scholar | Universities & Organizations</title>
+        <title>Partner With Schola X | Universities & Organizations</title>
         <meta
           name="description"
-          content="Partner with Up Scholar to connect your scholarships with qualified students worldwide. AI-powered matching for universities, organizations, and corporations."
+          content="Partner with Schola X to connect your scholarships with qualified students worldwide. AI-powered matching for universities, organizations, and corporations."
         />
       </Helmet>
 
@@ -131,7 +131,7 @@ export default function Partners() {
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               Partner With{" "}
-              <span className="text-gradient">Up Scholar</span>
+              <span className="text-gradient">Schola X</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Join our network of universities, organizations, and corporations

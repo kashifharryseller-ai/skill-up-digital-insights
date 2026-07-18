@@ -104,17 +104,17 @@ const roadmap = [
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Investor Relations - Up Scholar",
-  description: "Investment opportunities in Up Scholar - AI-powered education technology platform. Seed round funding for EdTech innovation.",
-  url: "https://upscholar.com/investors",
+  name: "Investor Relations - Schola X",
+  description: "Investment opportunities in Schola X - AI-powered education technology platform. Seed round funding for EdTech innovation.",
+  url: "https://Schola X.com/investors",
 };
 
 export default function Investors() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Investors & Sponsors - Up Scholar | AI EdTech Investment Opportunity</title>
-        <meta name="description" content="Invest in Up Scholar - AI-powered education technology platform. Join our seed round and help democratize access to education funding worldwide." />
+        <title>Investors & Sponsors - Schola X | AI EdTech Investment Opportunity</title>
+        <meta name="description" content="Invest in Schola X - AI-powered education technology platform. Join our seed round and help democratize access to education funding worldwide." />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Navbar />
@@ -144,7 +144,7 @@ export default function Investors() {
               <span className="text-gradient">AI-Powered Education</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Up Scholar is revolutionizing how students discover and access educational funding. 
+              Schola X is revolutionizing how students discover and access educational funding. 
               Join us in democratizing education through artificial intelligence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -212,7 +212,7 @@ export default function Investors() {
               Investment <span className="text-gradient">Highlights</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Up Scholar combines cutting-edge AI technology with a massive market opportunity in the EdTech sector.
+              Schola X combines cutting-edge AI technology with a massive market opportunity in the EdTech sector.
             </p>
           </motion.div>
 
