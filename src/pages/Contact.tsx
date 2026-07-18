@@ -101,9 +101,9 @@ const departments = [
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
-  name: "Contact Up Scholar",
-  description: "Get in touch with Up Scholar team for scholarship help, technical support, or partnership inquiries.",
-  url: "https://upscholar.com/contact",
+  name: "Contact Schola X",
+  description: "Get in touch with Schola X team for scholarship help, technical support, or partnership inquiries.",
+  url: "https://Schola X.com/contact",
   mainEntity: {
     "@type": "Organization",
     name: "Skill Up Digital Solutions",
@@ -153,8 +153,8 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Contact Us - Up Scholar | Get Support & Partnership Inquiries</title>
-        <meta name="description" content="Contact Up Scholar for scholarship help, technical support, or partnership opportunities. We respond within 24 hours. WhatsApp: +92 343 6148715" />
+        <title>Contact Us - Schola X | Get Support & Partnership Inquiries</title>
+        <meta name="description" content="Contact Schola X for scholarship help, technical support, or partnership opportunities. We respond within 24 hours. WhatsApp: +92 343 6148715" />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Navbar />
@@ -512,7 +512,7 @@ export default function Contact() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Up Scholar Headquarters - Lahore, Pakistan"
+              title="Schola X Headquarters - Lahore, Pakistan"
             />
           </div>
         </div>

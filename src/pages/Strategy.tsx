@@ -349,7 +349,7 @@ export default function Strategy() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Application Strategy Guide | Up Scholar - Complete Scholarship Roadmap</title>
+        <title>Application Strategy Guide | Schola X - Complete Scholarship Roadmap</title>
         <meta name="description" content="Complete guide to scholarship applications: step-by-step roadmap, document preparation tips, real-time fees, and requirements checklist. Build your winning strategy." />
       </Helmet>
       <Navbar />

@@ -295,7 +295,7 @@ const comparisonFeatures = [
 
 const generateWhatsAppLink = (planName: string, price: string) => {
   const message = encodeURIComponent(
-    `Hi! I'm interested in upgrading to the ${planName} plan (${price} PKR/month) on Up Scholar. Please provide more details about the subscription process.`
+    `Hi! I'm interested in upgrading to the ${planName} plan (${price} PKR/month) on Schola X. Please provide more details about the subscription process.`
   );
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
 };
@@ -800,7 +800,7 @@ export default function Pricing() {
               <h3 className="text-2xl font-bold mb-2">Start Your Scholarship Journey Today</h3>
               <p className="text-muted-foreground mb-6">
                 Join thousands of Pakistani students who have found fully-funded scholarships 
-                using Up Scholar. Have questions? Contact us directly on{" "}
+                using Schola X. Have questions? Contact us directly on{" "}
                 <a
                   href={`https://wa.me/${WHATSAPP_NUMBER}`}
                   target="_blank"

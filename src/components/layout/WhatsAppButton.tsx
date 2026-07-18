@@ -3,7 +3,7 @@ import { MessageCircle, X } from "lucide-react";
 import { useState } from "react";
 
 const WHATSAPP_NUMBER = "923436148715";
-const WHATSAPP_MESSAGE = "Hello! I need help with Up Scholar.";
+const WHATSAPP_MESSAGE = "Hello! I need help with Schola X.";
 
 export function WhatsAppButton() {
   const [isHovered, setIsHovered] = useState(false);
