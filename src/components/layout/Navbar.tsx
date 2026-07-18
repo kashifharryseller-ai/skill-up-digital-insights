@@ -127,7 +127,7 @@ export function Navbar() {
             </motion.div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight font-sans">
-                Up<span className="text-gradient">Scholar</span>
+                Schola<span className="text-gradient"> X</span>
               </span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
                 Skill Up Digital Solutions
